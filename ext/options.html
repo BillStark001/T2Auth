@@ -1,0 +1,113 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="options.css">
+</head>
+
+<body>
+    <div style="margin: auto; text-align: center;">
+        <p style="font-size: 30; margin: 0;">Tokyo Tech Authentication Kit</p>
+        <p style="font-size: 20; margin: 0 0 15px 0;">Options Page</p>
+    </div>
+    <div id="auth-info" class="std-border">
+        <table cellspacing="0" cellpadding="2">
+            <tbody>
+                <tr>
+                    <td colspan="2">Please input your account, password &amp; matrix authentication
+                        information.
+                        <div class="separator"></div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <th align="left">Account<br>(Student No.)</th>
+                    <td>
+                        <div class="col-sm-7">
+                            <div class="inner-addon left-addon"> <i class="glyphicon glyphicon-user"></i> <input
+                                    type="text" id="account" value="" size="32" maxlength="255" class="form-control"
+                                    placeholder="Account"></div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th align="left">Password</th>
+
+                    <td>
+                        <div class="col-sm-7">
+                            <div class="inner-addon left-addon"> <i class="glyphicon glyphicon-lock"></i> <input
+                                    type="password" id="passwd" value="" size="32" maxlength="32" class="form-control"
+                                    placeholder="Password"></div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div class="separator"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <th align="left">Matrix Info.</th>
+
+                    <td>
+                        <div class="col-sm-7">
+                            <div class="inner-addon left-addon"> <i class="glyphicon glyphicon-user"></i> <input
+                                    type="text" id="mat-r1" value="" size="32" maxlength="255" class="form-control"
+                                    placeholder="Row 1"></div>
+                            <div class="inner-addon left-addon"> <i class="glyphicon glyphicon-user"></i> <input
+                                    type="text" id="mat-r2" value="" size="32" maxlength="255" class="form-control"
+                                    placeholder="Row 2"></div>
+                            <div class="inner-addon left-addon"> <i class="glyphicon glyphicon-user"></i> <input
+                                    type="text" id="mat-r3" value="" size="32" maxlength="255" class="form-control"
+                                    placeholder="Row 3"></div>
+                            <div class="inner-addon left-addon"> <i class="glyphicon glyphicon-user"></i> <input
+                                    type="text" id="mat-r4" value="" size="32" maxlength="255" class="form-control"
+                                    placeholder="Row 4"></div>
+                            <div class="inner-addon left-addon"> <i class="glyphicon glyphicon-user"></i> <input
+                                    type="text" id="mat-r5" value="" size="32" maxlength="255" class="form-control"
+                                    placeholder="Row 5"></div>
+                            <div class="inner-addon left-addon"> <i class="glyphicon glyphicon-user"></i> <input
+                                    type="text" id="mat-r6" value="" size="32" maxlength="255" class="form-control"
+                                    placeholder="Row 6"></div>
+                            <div class="inner-addon left-addon"> <i class="glyphicon glyphicon-user"></i> <input
+                                    type="text" id="mat-r7" value="" size="32" maxlength="255" class="form-control"
+                                    placeholder="Row 7"></div>
+                        </div>
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td colspan="2">
+                        <div class="separator"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center" colspan="2">
+                        <input type="button" id="submit" value="Submit">
+                        <input type="button" id="syncdel" value="Delete All Stored Information">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="center" , colspan="2">
+                        <input type="checkbox" id="direct-login" name="direct-login" value="direct-login">
+                        <label for="direct-login">Log in automatically once a login page is opened</label><br>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center" colspan="2">
+                        <input type="button" id="input" value="Input From File">
+                        <input type="button" id="output" value="Output To File">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div style="margin: auto; text-align: center; font-size: 10px;">
+        <p>Made by Bill Stark</p>
+    </div>
+</body>
+<script src="utils.js"></script>
+<script src="options.js"></script>
+
+</html>
