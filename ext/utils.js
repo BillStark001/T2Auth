@@ -11,6 +11,16 @@ if (!String.prototype.format) {
     };
 }
 
+function querySelectors(target, selectors) {
+    var ans = undefined;
+    for (s of selectors) {
+        ans = target.querySelector(s);
+        if (isNormalVar(ans))
+            break;
+    }
+    return ans;
+}
+
 async function loadJSON(url) {
     try {
         let response = await fetch(url);

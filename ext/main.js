@@ -1,12 +1,16 @@
 // patterns
-PAT_AUTH = 'input[type="button"][value="同意（マトリクス/OTP認証）"]'
-PAT_AUTH_ENG = 'input[type="button"][value="Agree(Matrix|OTP Auth.)"]'
+PAT_AUTH = [
+    'input[type="button"][value="同意（マトリクス/OTP認証）"]', 
+    'input[type="button"][value="Agree(Matrix|OTP Auth.)"]', 
+    'input[type="button"][value="同意（マトリクス/OTP/ソフトトークン認証）"]', 
+    'input[type="button"][value="Agree ( Matrix / OTP / Soft Token Auth.)"]', 
+];
 
-PAT_ACCOUNT = 'input.form-control[type="text"][name="usr_name"]'
-PAT_PASSWD = 'input.form-control[type="password"][name="usr_password"]'
-PAT_FORWARD = 'input[type="submit"][name="OK"]'
+PAT_ACCOUNT = 'input.form-control[type="text"][name="usr_name"]';
+PAT_PASSWD = 'input.form-control[type="password"][name="usr_password"]';
+PAT_FORWARD = 'input[type="submit"][name="OK"]';
 
-PAT_LOGOUT = 'a[href="/GetAccess/Logout"]'
+PAT_LOGOUT = 'a[href="/GetAccess/Logout"]';
 
 // vars
 
@@ -70,8 +74,7 @@ async function main(info) {
     var handle = 114514;
 
     handle = setInterval(() => {
-        btnAuth = document.querySelector(PAT_AUTH);
-        btnAuth = (!isNormalVar(btnAuth)) ? document.querySelector(PAT_AUTH_ENG) : btnAuth;
+        btnAuth = querySelectors(document, PAT_AUTH);
         inScreen1 = isNormalVar(btnAuth);
 
         textAccount = document.querySelector(PAT_ACCOUNT);

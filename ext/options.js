@@ -89,12 +89,13 @@ async function optmain(info) {
         // TODO
     };
 
-    ctrls.direct_login.onchange = () => {
+    var dloc = () => {
         let v = ctrls.direct_login.checked;
         chrome.storage.sync.set({
             'directLogin': v
         });
-    }
+    };
+    ctrls.direct_login.onchange = dloc;
 
     ctrls.output.onclick = () => {
         var rawContent = checkAndFormInfo()[2];
@@ -110,6 +111,7 @@ async function optmain(info) {
     ctrls.input.onclick = () => {
         load(ans => {
             ctrls.direct_login.checked = ans.directLogin;
+            dloc();
             ctrls.account.value = ans.username;
             ctrls.passwd.value = ans.passwd;
             setMatrixTable(ans.table);
