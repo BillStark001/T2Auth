@@ -61,6 +61,11 @@ input[type="number"] {
     margin: 2px 0;
 }
 
+.mat-input {
+    font-family: 'Lucida Console', 'Consolas', 'Courier New', Courier, monospace;
+    letter-spacing: 12px;
+}
+
 
 button.small-button {
     border-radius: 40%;
