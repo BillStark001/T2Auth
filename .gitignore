@@ -1,4 +1,7 @@
 *.crx
-*.zip
 *.pem
 .DS_Store
+
+node_modules
+ext
+dist
