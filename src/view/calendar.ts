@@ -18,7 +18,7 @@ export const Calendar: C<CalendarAttrs> = {
     const start = _start ?? (dayjs().startOf('month'));
     const end = _end && _end.isAfter(start) ? _end : start.add(1, 'month');
     const firstWeek = start.startOf('week');
-    const weekDiff = end.diff(firstWeek, 'week');
+    const weekDiff = Math.ceil(end.diff(firstWeek, 'week', true));
 
     return m('table.calendar',
       m('tr.cal-row.header', range(rowView ? -1 : 0, 7).map(i => i == -1 ?

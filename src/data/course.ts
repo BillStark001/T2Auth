@@ -17,7 +17,7 @@ export type CourseInfoScheme = {
   titleJa: string;
   titleEn: string;
   ay: number;
-  quarter: [boolean, boolean, boolean, boolean];
+  quarters: number[];
   periods: DayPeriodScheme[];
   __raw__: Record<string, string>;
 };
@@ -92,17 +92,17 @@ export const parseDayPeriod = (inStr: string) => {
 export const parseAcademicQuarter = (strIn: string) => {
 
   const str: string = strIn.replace('Q', '').trim();
-  const ret: [boolean, boolean, boolean, boolean] = [false, false, false, false];
+  const retRaw: [boolean, boolean, boolean, boolean] = [false, false, false, false];
   let last_d: number = 0;
   let bar: boolean = false;
 
   for (const d of str) {
     try {
       const cur_d: number = parseInt(d) - 1;
-      ret[cur_d] = true;
+      retRaw[cur_d] = true;
       if (bar) {
         for (let dd = last_d; dd < cur_d; dd++) {
-          ret[dd] = true;
+          retRaw[dd] = true;
         }
       }
       last_d = cur_d;
@@ -112,7 +112,19 @@ export const parseAcademicQuarter = (strIn: string) => {
       }
     }
   }
-
+  const ret: number[] = [];
+  if (retRaw[0] && retRaw[1]) {
+    ret.push(5);
+    retRaw[0] = false;
+    retRaw[1] = false;
+  }
+  if (retRaw[2] && retRaw[3]) {
+    ret.push(6);
+    retRaw[2] = false;
+    retRaw[3] = false;
+  }
+  retRaw.forEach((x, i) => x && ret.push(i + 1));
+  ret.sort();
   return ret;
 };
 
@@ -141,7 +153,7 @@ export const getOcwParsedData = (raw?: Record<string, string>): CourseInfoScheme
     titleJa,
     titleEn,
     ay,
-    quarter,
+    quarters: quarter,
     periods,
     __raw__: raw
   };

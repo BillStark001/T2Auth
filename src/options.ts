@@ -6,7 +6,7 @@ const PageView: m.ComponentTypes = {
   view() {
     return m('div', [
       m(HeaderView, { page: 'Options Page' }),
-      m(AuthInfoOptions),
+      m('div.std-border', m(AuthInfoOptions)),
       m(FooterView),
     ]);
   },
