@@ -1,6 +1,6 @@
-import { getIdentity } from '../common/identity';
-import { useMessageHandler } from '../common/message';
-import { getFingerPrint, decryptAES, encryptAES } from '../common/utils';
+import { getIdentity } from '@/common/identity';
+import { useMessageHandler } from '@/common/message';
+import { getFingerPrint, decryptAES, encryptAES } from '@/common/utils';
 
 function decryptInfo(u: string, p: string, t: string, k: string, i: string, f: string): [string, string, string, boolean] {
   const check = getFingerPrint(k, i) == f;

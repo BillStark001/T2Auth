@@ -17,6 +17,7 @@
     "@types/chrome": "^0.0.246",
     "@types/crypto-js": "^4.1.2",
     "@types/mithril": "^2.2.2",
+    "@types/node": "^20.8.2",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
     "@typescript-eslint/parser": "^6.7.4",
     "eslint": "^8.50.0",
@@ -24,8 +25,12 @@
     "vite": "^4.4.10"
   },
   "dependencies": {
+    "@types/ical": "^0.8.1",
     "crypto-js": "^4.1.1",
+    "dayjs": "^1.11.10",
+    "ical": "^0.8.0",
     "md5js": "^1.0.7",
-    "mithril": "^2.2.2"
+    "mithril": "^2.2.2",
+    "mithril-portal": "^2.0.0"
   }
 }

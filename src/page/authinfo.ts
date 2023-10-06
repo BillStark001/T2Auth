@@ -1,8 +1,7 @@
-import { Button } from '../common/controls';
-import m from 'mithril';
-import { ComponentTypes as C } from 'mithril';
+import { Button } from '@/view/general';
+import m, { ComponentTypes as C } from 'mithril';
 import { LoginInfoScheme, getInformation, getInitInfo, setInformation } from './sw';
-import { loadJson, saveToFile } from '../common/utils';
+import { loadJson, saveToFile } from '@/common/utils';
 
 const MATRIX_ROWS = 7;
 const MATRIX_COLS = 10;

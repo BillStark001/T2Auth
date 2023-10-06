@@ -42,5 +42,6 @@ The project uses
 * [Vite](https://vitejs.dev/) and [CRXJS](https://crxjs.dev/) for deployment
 * [Mithril.js](https://mithril.js.org/) for frontend rendering
 * md5.js and [CryptoJS](https://github.com/brix/crypto-js) for encryption and decryption.
+* [ical.js](https://github.com/kewisch/ical.js)
 
 If you want to build and debug in your own environment, follow [this instruction](https://crxjs.dev/vite-plugin/concepts/pages).

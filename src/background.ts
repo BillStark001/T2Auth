@@ -1,5 +1,5 @@
 import { handleMessage } from './common/message';
-import './pages/sw';
+import './page/sw';
 
 async function bgmain() {
 

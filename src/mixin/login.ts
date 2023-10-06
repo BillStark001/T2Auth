@@ -1,18 +1,18 @@
-import { querySelectors } from '../common/utils';
+import { querySelectors } from '@/common/utils';
 
 // patterns
-const PAT_AUTH = [
+const SEL_AUTH = [
   'input[type="button"][value="同意（マトリクス/OTP認証）"]',
   'input[type="button"][value="Agree(Matrix|OTP Auth.)"]',
   'input[type="button"][value="同意（マトリクス/OTP/ソフトトークン認証）"]',
   'input[type="button"][value="Agree ( Matrix / OTP / Soft Token Auth.)"]',
 ];
 
-const PAT_ACCOUNT = 'input.form-control[type="text"][name="usr_name"]';
-const PAT_PASSWD = 'input.form-control[type="password"][name="usr_password"]';
-const PAT_FORWARD = 'input[type="submit"][name="OK"]';
+const SEL_ACCOUNT = 'input.form-control[type="text"][name="usr_name"]';
+const SEL_PASSWD = 'input.form-control[type="password"][name="usr_password"]';
+const SEL_FORWARD = 'input[type="submit"][name="OK"]';
 
-const PAT_LOGOUT = 'a[href="/GetAccess/Logout"]';
+const SEL_LOGOUT = 'a[href="/GetAccess/Logout"]';
 
 // vars
 
@@ -97,25 +97,26 @@ export const proceedLogin = async (info: [boolean, string, string, string]) => {
   const passwd = info[2];
   const table = info[3];
 
-  let handle = 114514;
+  let handle: NodeJS.Timeout | undefined = undefined;
 
   handle = setInterval(() => {
-    btnAuth = querySelectors(document, PAT_AUTH) as HTMLInputElement;
+    btnAuth = querySelectors(document, SEL_AUTH) as HTMLInputElement;
     inScreen1 = !!btnAuth;
 
-    textAccount = document.querySelector(PAT_ACCOUNT);
-    textPasswd = document.querySelector(PAT_PASSWD);
-    btnForward = document.querySelector(PAT_FORWARD);
+    textAccount = document.querySelector(SEL_ACCOUNT);
+    textPasswd = document.querySelector(SEL_PASSWD);
+    btnForward = document.querySelector(SEL_FORWARD);
     inScreen2 = !!(textAccount && textPasswd && btnForward);
 
     formAuth = document.getElementById('authentication') as HTMLTableElement;
     inScreen3 = !!(formAuth && btnForward);
 
-    btnLogout = document.querySelector(PAT_LOGOUT);
+    btnLogout = document.querySelector(SEL_LOGOUT);
     inScreen4 = !!btnLogout;
 
     if (inAtLeastOneScreen()) {
       clearInterval(handle);
+      handle = undefined;
       if (inScreen1) procScreen1(directLogin);
       if (inScreen2) procScreen2(username, passwd);
       if (inScreen3) procScreen3(table);

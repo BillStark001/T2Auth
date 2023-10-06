@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import { crx, defineManifest } from '@crxjs/vite-plugin';
+import path from 'path';
 
 const manifest = defineManifest({
   name: 'T2Auth', 
@@ -32,7 +33,9 @@ const manifest = defineManifest({
       ],
       matches: [
         '*://*.gsic.titech.ac.jp/*',
-        '*://portal.titech.ac.jp/*'
+        '*://portal.titech.ac.jp/*',
+        '*://www.ocw.titech.ac.jp/*',
+        '*://ocw.titech.ac.jp/*',
       ],
       all_frames: true,
       run_at: 'document_end',
@@ -42,4 +45,9 @@ const manifest = defineManifest({
 
 export default defineConfig({
   plugins: [crx({ manifest })],
+  resolve: {
+    alias: {
+      '@': path.join(__dirname, 'src/'),
+    }
+  }
 });

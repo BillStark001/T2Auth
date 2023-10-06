@@ -1,13 +1,13 @@
 import m from 'mithril';
-import { MadeByView, TitleView } from './common/controls';
-import { AuthInfoOptions } from './pages/authinfo';
+import { FooterView, HeaderView } from './view/general';
+import { AuthInfoOptions } from './page/authinfo';
 
 const PageView: m.ComponentTypes = {
   view() {
     return m('div', [
-      m(TitleView, { page: 'Options Page' }),
+      m(HeaderView, { page: 'Options Page' }),
       m(AuthInfoOptions),
-      m(MadeByView),
+      m(FooterView),
     ]);
   },
 };

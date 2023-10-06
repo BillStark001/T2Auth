@@ -1,21 +1,20 @@
-import m from 'mithril';
-import { ComponentTypes as C } from 'mithril';
+import m, { ComponentTypes as C } from 'mithril';
 
-export const Button: C<{ 
-  text: string, 
+export const Button: C<{
+  text: string,
   click?: (ev: MouseEvent) => void,
 }> = {
   view(vnode) {
     return m('input', {
-      type: 'button', 
-      id: 'input', 
-      value: vnode.attrs.text, 
+      type: 'button',
+      id: 'input',
+      value: vnode.attrs.text,
       onclick: vnode.attrs.click,
     });
   },
 };
 
-export const TitleView: C<{ page?: string }> = {
+export const HeaderView: C<{ page?: string }> = {
   view(vnode) {
     return m('div', {
       style: {
@@ -29,8 +28,8 @@ export const TitleView: C<{ page?: string }> = {
   }
 };
 
-export const MadeByView: C = {
-  view: function() {
+export const FooterView: C = {
+  view() {
     return m('div', {
       style: {
         margin: 'auto',

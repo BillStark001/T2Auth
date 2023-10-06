@@ -1,13 +1,19 @@
-import { tryConnect } from './common/message';
-import { proceedLogin } from './pages/login';
-import { getInitInfo } from './pages/sw';
 
-console.log('Thanks for using the Authentication Kit.');
+import { tryConnect } from './common/message';
+import { proceedLogin } from './mixin/login';
+import { mountOnOcwPage } from './mixin/ocw';
+import { getInitInfo } from './page/sw';
+
+// console.log('Thanks for using the Authentication Kit.');
 
 const main = async () => {
   await tryConnect();
-  const i = await getInitInfo();
-  proceedLogin(i);
+  const host = location.hostname;
+  if (host.includes('ocw')) {
+    mountOnOcwPage();
+  } else {
+    proceedLogin(await getInitInfo());
+  }
 };
 
 main().catch(console.error);

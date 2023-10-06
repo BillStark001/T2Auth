@@ -1,6 +1,38 @@
 import CryptoJS from 'crypto-js';
 import { md5 } from 'md5js';
 
+/**
+ * 
+ * @param startOrEnd 
+ * @param end 
+ * @param step 
+ * @returns 
+ */
+export const range = (startOrEnd: number, end?: number, step: number = 1) => {
+  if (step === 0) {
+    throw new Error('Step cannot be zero');
+  }
+  let start = startOrEnd;
+  if (end == undefined) {
+    end = startOrEnd;
+    start = 0;
+  }
+
+  const result = [];
+
+  if (step > 0) {
+    for (let i = start; i < end; i += step) {
+      result.push(i);
+    }
+  } else {
+    for (let i = start; i > end; i += step) {
+      result.push(i);
+    }
+  }
+
+  return result;
+};
+
 export const querySelectors = <T extends Element>(target: Document, selectors: string[]) => {
   let ans = null;
   for (const s of selectors) {
