@@ -1,4 +1,6 @@
+import { t } from '@/common/lang/i18n';
 import { querySelectors } from '@/common/utils';
+import { getAllInfo } from '@/page/sw';
 
 // patterns
 const SEL_AUTH = [
@@ -42,7 +44,16 @@ const showInfo = (ctx: string) => {
 
 function procScreen1(directLogin?: boolean) {
   showInfo('Screen 1');
-  if (directLogin) btnAuth!.click();
+  if (directLogin) 
+    btnAuth!.click();
+  else {
+    const loginHint = document.createElement('span');
+    loginHint.classList.add('titleLogo');
+    loginHint.innerText = t('mixin.login.hint');
+    const parent = btnAuth?.parentNode;
+    parent?.appendChild(document.createElement('br'));
+    parent?.appendChild(loginHint);
+  }
 }
 
 function procScreen2(username: string, passwd: string) {
@@ -91,11 +102,9 @@ function procScreen3(table: string) {
 
 // main()
 
-export const proceedLogin = async (info: [boolean, string, string, string]) => {
-  const directLogin = info[0];
-  const username = info[1];
-  const passwd = info[2];
-  const table = info[3];
+export const proceedLogin = async () => {
+
+  const [{ directLogin }, { username, passwd, table }] = await getAllInfo();
 
   let handle: NodeJS.Timeout | undefined = undefined;
 

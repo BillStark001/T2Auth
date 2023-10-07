@@ -25,11 +25,10 @@
     "vite": "^4.4.10"
   },
   "dependencies": {
-    "@types/ical": "^0.8.1",
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.10",
     "i18next": "^23.5.1",
-    "ical": "^0.8.0",
+    "ical.js": "^1.5.0",
     "md5js": "^1.0.7",
     "mithril": "^2.2.2",
     "mithril-portal": "^2.0.0"

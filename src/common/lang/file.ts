@@ -4,6 +4,11 @@ export const langOrder = Object.freeze(['en', 'ja', 'zh']);
 
 export const langRes: LanguageResource = {
   meta: {
+    app: {
+      name: 'T2Auth',
+      author: 'Bill Stark',
+      footer: 'Made by {{author}}',
+    },
     weekDay: {
       [0]: ['Sunday', '日曜日', '星期日'],
       [1]: ['Monday', '月曜日', '星期一'],
@@ -35,6 +40,13 @@ export const langRes: LanguageResource = {
     }
   },
   mixin: {
+    login: {
+      hint: [
+        'T2Auth: Auto Login Ready.',
+        'T2Auth: 自動ログイン可能です。',
+        'T2Auth: 自动登录已启用。',
+      ]
+    },
     ocw: {
       cal: {
         start: ['Start→', '学期開始→', '学期开始→'],
@@ -66,6 +78,53 @@ export const langRes: LanguageResource = {
         '生成iCalendar日程文件',
       ]
 
+    }
+  },
+  page: {
+    options: {
+      btn: {
+        'submit': ['Submit', '保存', '保存'],
+        'restore': ['Restore to Default', 'デフォルトに設定', '设为默认'],
+        'delete': ['Delete', '削除', '删除'],
+        'input': ['Upload', 'アップロード', '上传并替换'],
+        'output': ['Download', 'ダウンロード', '下载'],
+      },
+      alert: {
+        noUser: [
+          'Please input your account!', 
+          'アカウントをご入力ください。',
+          '请输入账户！',
+        ],
+        noPassword: [
+          'Please input your password!', 
+          'パスワードをご入力ください。',
+          '请输入密码！',
+        ],
+        invalidMat: [
+          'Invalid data at matrix info line {{line}}!',
+          'マトリクスコード第 {{line}} 行目にエラーがあります。',
+          '在矩阵信息第 {{line}} 行发现错误。',
+        ]
+      },
+      loginInfo: {
+        username: {
+          key: ['Account\n(Student No.)', 'アカウント\n（学籍番号）', '账户\n（学生卡号）'],
+          placeholder: ['Account', 'アカウント', '账户'],
+        },
+        passwd: {
+          key: ['Password', 'パスワード', '密码'],
+          placeholder: ['Password', 'パスワード', '密码'],
+        },
+        table: {
+          key: ['Matrix Info.', 'マトリクスコード', '矩阵信息'],
+          placeholder: ['Row {{row}}', '第 {{row}} 行', '第 {{row}} 行'],
+        }
+      },
+      directLogin: [
+        'Login when login page is opened',
+        'ログイン画面が開けたらすぐにログイン',
+        '在登录页面直接登录',
+      ]
     }
   }
 };

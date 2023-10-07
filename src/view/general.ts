@@ -1,3 +1,4 @@
+import { t } from '@/common/lang/i18n';
 import m, { ComponentTypes as C } from 'mithril';
 
 export const Button: C<{
@@ -22,7 +23,7 @@ export const HeaderView: C<{ page?: string }> = {
         textAlign: 'center'
       }
     }, [
-      m('p.header-title', {}, 'Tokyo Tech Authentication Kit'),
+      m('p.header-title', {}, t('meta.app.name')),
       vnode.attrs.page && m('p.header-subtitle', {}, vnode.attrs.page)
     ]);
   }
@@ -37,7 +38,7 @@ export const FooterView: C = {
         fontSize: '10px'
       }
     }, [
-      m('p', 'Made by Bill Stark')
+      m('p', t('meta.app.footer', { author: t('meta.app.author') }))
     ]);
   }
 };

@@ -1,91 +1,39 @@
 import { getIdentity } from '@/common/identity';
 import { useMessageHandler } from '@/common/message';
-import { getFingerPrint, decryptAES, encryptAES } from '@/common/utils';
+import { LoginInfoScheme, OptionsScheme, decryptInfo, encryptInfo, getDefaultOptions } from '@/data/model';
 
-function decryptInfo(u: string, p: string, t: string, k: string, i: string, f: string): [string, string, string, boolean] {
-  const check = getFingerPrint(k, i) == f;
-  if (!check) {
-    try {
-      const du = decryptAES(u, k, i);
-      const dp = decryptAES(p, k, i);
-      const dt = decryptAES(t, k, i);
-      return [du, dp, dt, check];
-    } catch (e) {
-      return ['', '', String(e), check];
-    }
-  }
-  const du = decryptAES(u, k, i);
-  const dp = decryptAES(p, k, i);
-  const dt = decryptAES(t, k, i);
-  return [du, dp, dt, check];
-}
-
-function encryptInfo(u: string, p: string, t: string, k: string, i: string) {
-  const du = encryptAES(u, k, i);
-  const dp = encryptAES(p, k, i);
-  const dt = encryptAES(t, k, i);
-  const fp = getFingerPrint(k, i);
-  return {
-    fingerprint: fp,
-    username: du,
-    passwd: dp,
-    table: dt,
-  };
-  // return [fp, du, dp, dt];
-}
-
-export type LoginInfoScheme = {
-  username: string;
-  passwd: string;
-  table: string;
-  directLogin: boolean;
-}
-
-export type OptionsScheme = LoginInfoScheme & {
-  fingerprint: string;
-};
-
-const allOptions: OptionsScheme = {
-  username: '',
-  passwd: '',
-  table: '',
-  fingerprint: 'none',
-  directLogin: false,
-};
+const allOptions = getDefaultOptions();
 
 const STORAGE = chrome.storage.sync;
 
-
-export const getInformation = useMessageHandler(async (): Promise<LoginInfoScheme> => {
+const _getLoginInfo = async (): Promise<LoginInfoScheme> => {
   const [k, i] = await getIdentity();
-  const options = await STORAGE.get(allOptions);
-  const dec = decryptInfo(
-    options.username,
-    options.passwd,
-    options.table,
-    k,
-    i,
-    options.fingerprint
-  );
-  return {
-    username: dec[0],
-    passwd: dec[1],
-    table: dec[2],
-    directLogin: options.directLogin,
-  };
-}, 'getInformation');
+  const options = await STORAGE.get({ loginInfo: allOptions.loginInfo });
+  const [dec,] = decryptInfo(options.loginInfo ?? {}, k, i);
+  return dec;
+};
 
-export const getInitInfo = () => getInformation().then(
-  ({ username, passwd, table, directLogin }) => [directLogin, username, passwd, table] as [boolean, string, string, string]
-);
+export const getLoginInfo = useMessageHandler(_getLoginInfo, 'getLoginInfo');
 
-export const setInformation = useMessageHandler(async (optIn: Partial<LoginInfoScheme>) => {
-  const [k, i] = await getIdentity();
+export const setLoginInfo = useMessageHandler(async (info: LoginInfoScheme, id?: [string, string]) => {
+  const [k, i] = id ?? await getIdentity();
+  const enc = encryptInfo(info, k, i);
+  await STORAGE.set({ loginInfo: enc });
+}, 'setLoginInfo');
+
+const _getOptions = async (): Promise<OptionsScheme> => {
   const options = await STORAGE.get(allOptions);
-  const opt = { ...options, ...optIn } as LoginInfoScheme;
-  const enc = encryptInfo(opt.username, opt.passwd, opt.table, k, i);
-  STORAGE.set(enc);
-  if (optIn.directLogin != undefined) {
-    STORAGE.set({ directLogin: optIn.directLogin });
-  }
-}, 'setInformation');
+  delete options.loginInfo;
+  return options as OptionsScheme;
+};
+
+export const getOptions = useMessageHandler(_getOptions, 'getOptions');
+
+export const setOptions = useMessageHandler(async (optIn: Partial<OptionsScheme>) => {
+  await STORAGE.set(optIn);
+}, 'setOptions');
+
+export const getAllInfo = useMessageHandler(async () => [
+  await _getOptions(),
+  await _getLoginInfo(),
+] as [OptionsScheme, LoginInfoScheme], 'getAllInfo');

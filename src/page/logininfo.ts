@@ -1,7 +1,9 @@
 import { Button } from '@/view/general';
 import m, { ComponentTypes as C } from 'mithril';
-import { LoginInfoScheme, getInformation, getInitInfo, setInformation } from './sw';
+import { getAllInfo, setLoginInfo, getLoginInfo } from './sw';
 import { VnodeObj, loadJson, saveToFile } from '@/common/utils';
+import { LoginInfoScheme, getDefaultLoginInfo } from '@/data/model';
+import { t } from '@/common/lang/i18n';
 
 const MATRIX_ROWS = 7;
 const MATRIX_COLS = 10;
@@ -13,17 +15,17 @@ const legalizeMatrixRow = (strRaw: string | undefined) => {
 };
 
 const checkAndFormInfo = (acc: string, pwd: string, codes: string[]): [
-  boolean, string, Partial<LoginInfoScheme>
+  boolean, string, LoginInfoScheme
 ] => {
   let vt = true;
-  let alerts = '';
+  const alerts: string[] = [];
   if (acc.length == 0) {
     vt = false;
-    alerts += 'Please input your account!\n';
+    alerts.push(t('page.options.alert.noUser'));
   }
   if (pwd.length == 0) {
     vt = false;
-    alerts += 'Please input your password!\n';
+    alerts.push(t('page.options.alert.noPassword'));
   }
   let mat = '';
   for (let i = 0; i < MATRIX_ROWS; ++i) {
@@ -42,12 +44,12 @@ const checkAndFormInfo = (acc: string, pwd: string, codes: string[]): [
     mat = mat + tmat;
     if (vt1 != true) {
       vt = false;
-      alerts += 'Invalid data at matrix info line ' + i + '!\n';
+      alerts.push(t('page.options.alert.invalidMat', { line: i + 1 }));
     }
   }
   return [
     vt,
-    alerts,
+    alerts.join('\n'),
     {
       username: acc,
       passwd: pwd,
@@ -68,8 +70,8 @@ const MatrixInfo: C<{
         m('input.form-control.mat-input', {
           type: 'text',
           size: '32',
-          maxlength: '255',
-          placeholder: `Row ${i}`,
+          maxlength: String(MATRIX_COLS),
+          placeholder: t('page.options.loginInfo.table.placeholder', { row: i + 1 }),
           value: rows[i],
           oninput(e: InputEvent) {
             oi(i, ((e.target as HTMLInputElement).value ?? '')
@@ -86,12 +88,10 @@ type _S = {
   account: string,
   password: string,
   matrixCodes: string[],
-  valid: Record<string, boolean>,
-  directLogin: boolean,
 };
 
 const refresh = async (vnode: VnodeObj<object, _S>) => {
-  const [directLogin, account, password, matrixInfo] = await getInitInfo();
+  const [{ directLogin }, { username: account, passwd: password, table: matrixInfo }] = await getAllInfo();
   const matrixCodes = [];
   for (let i = 0; i < MATRIX_ROWS; ++i) {
     matrixCodes.push(legalizeMatrixRow(
@@ -107,22 +107,20 @@ const refresh = async (vnode: VnodeObj<object, _S>) => {
   m.redraw();
 };
 
-export const AuthInfoOptions: C<object, _S> = {
+export const LoginInfoPanel: C<object, _S> = {
   async oninit(vnode) {
     refresh(vnode);
   },
 
   view(vnode) {
     return m('div.options', [
-      m('div', 'Please input your account, password & matrix authentication information.'),
-      m('div.separator'),
       m('div.option-group', [
-        m('div.option-key', 'Account\n(Student No.)'),
+        m('div.option-key', t('page.options.loginInfo.username.key')),
         m('input.form-control', {
           type: 'text',
           size: '32',
           maxlength: '255',
-          placeholder: 'Account',
+          placeholder: t('page.options.loginInfo.username.placeholder'),
           value: vnode.state.account,
           oninput(e: InputEvent) {
             vnode.state.account = (e.target as HTMLInputElement).value;
@@ -130,12 +128,12 @@ export const AuthInfoOptions: C<object, _S> = {
         })
       ]),
       m('div.option-group', [
-        m('div.option-key', 'Password'),
+        m('div.option-key', t('page.options.loginInfo.passwd.key')),
         m('input.form-control', {
           type: 'password',
           size: '32',
           maxlength: '32',
-          placeholder: 'Password',
+          placeholder: t('page.options.loginInfo.passwd.placeholder'),
           value: vnode.state.password,
           oninput(e: InputEvent) {
             vnode.state.password = (e.target as HTMLInputElement).value;
@@ -144,7 +142,7 @@ export const AuthInfoOptions: C<object, _S> = {
       ]),
       m('div.separator'),
       m('div.option-group', [
-        m('div.option-key', 'Matrix Info.'),
+        m('div.option-key', t('page.options.loginInfo.table.key')),
         m(MatrixInfo, {
           rows: vnode.state.matrixCodes ?? [],
           oninput(i, v) {
@@ -154,57 +152,43 @@ export const AuthInfoOptions: C<object, _S> = {
       ]),
       m('div.separator'),
         
-      m('div[align=center]', [
-        m('input[type=checkbox][name=direct-login][value=direct-login]', {
-          checked: vnode.state.directLogin,
-          onchange(e: InputEvent) {
-            vnode.state.directLogin = (e.target as HTMLInputElement).checked;
-          }
-        }),
-        m('label[for=direct-login]', 'Log in automatically once a login page is opened')
-      ]),
-      m('div.separator'),
-        
       
       m('div.btn-group[align=center]', [
         m(Button, {
-          text: 'Submit', click() {
+          text: t('page.options.btn.submit'), async click() {
             const [vt, alerts, payload] = checkAndFormInfo(
               vnode.state.account, vnode.state.password, vnode.state.matrixCodes
             );
             if (!vt) {
               alert(alerts);
             } else {
-              setInformation({ ...payload, directLogin: vnode.state.directLogin, }).then(() => refresh(vnode));
+              await setLoginInfo(payload);
+              refresh(vnode);
             }
           },
         }),
         m(Button, {
-          text: 'Delete All Stored Information', click() {
+          text: t('page.options.btn.delete'), click() {
             const [, , payload] = checkAndFormInfo('', '', []);
-            setInformation({ ...payload, directLogin: false, }).then(() => refresh(vnode));
+            setLoginInfo(payload).then(() => refresh(vnode));
           },
         }),
-      ]),
-
-      m('div.btn-group[align=center]', [
         m(Button, {
-          text: 'Input From File', click() {
+          text: t('page.options.btn.input'), click() {
             loadJson<Partial<LoginInfoScheme>>().then(async (ans) => {
-              await setInformation(ans);
+              await setLoginInfo({ ...getDefaultLoginInfo(), ...ans });
               await refresh(vnode);
             });
           },
         }),
         m(Button, {
-          text: 'Output To File', click() {
-            getInformation().then(rawContent => {
+          text: t('page.options.btn.output'), click() {
+            getLoginInfo().then((rawContent) => {
               const content = JSON.stringify(rawContent);
-              console.log(content);
               const blob = new Blob([content], {
                 type: 'text/plain;charset=utf-8',
               });
-              saveToFile(blob, 'options.json');
+              saveToFile(blob, 'account.json');
             });
           },
         }),
