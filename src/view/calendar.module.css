@@ -1,0 +1,38 @@
+
+table.calendar {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 10px;
+  border-style: hidden;
+  box-shadow: 0 0 0 1px #666; /* this draws the table border  */ 
+}
+
+table.calendar th,
+table.calendar td {
+  border: 1px solid #ccc;
+  padding: 4px;
+}
+
+table.calendar th {
+  background-color: #f2f2f2;
+}
+
+table.calendar {
+  border-radius: 10px;
+}
+
+table.calendar tr:first-child th:first-child {
+  border-top-left-radius: 10px;
+}
+
+table.calendar tr:first-child th:last-child {
+  border-top-right-radius: 10px;
+}
+
+table.calendar tr:last-child td:first-child {
+  border-bottom-left-radius: 10px;
+}
+
+table.calendar tr:last-child td:last-child {
+  border-bottom-right-radius: 10px;
+}

@@ -1,8 +1,9 @@
+import { VnodeLike } from '@/common/utils';
 import m, { ComponentTypes as C } from 'mithril';
 import Portal from 'mithril-portal';
 
 export type ModalAttrs = {
-  header?: undefined | string | (() => m.Vnode),
+  header?: undefined | string | (() => VnodeLike),
   isOpen?: boolean,
   onclose: () => void | Promise<void>,
 };

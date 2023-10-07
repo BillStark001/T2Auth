@@ -4,6 +4,7 @@ import { Component, Vnode } from 'mithril';
 
 type _NoLifecycle<T> = Omit<T, keyof Component>;
 export type VnodeObj<Attrs, State> = Vnode<Attrs, _NoLifecycle<Component<Attrs, State> & State>>;
+export type VnodeLike = string | undefined | Vnode | VnodeLike[];
 
 /**
  * 

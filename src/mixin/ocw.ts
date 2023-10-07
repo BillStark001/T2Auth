@@ -1,12 +1,15 @@
 import { CourseInfoScheme, DayPeriodScheme, getOcwParsedData } from '@/data/course';
-import { Button } from '@/view/general';
 import { Modal } from '@/view/modal';
 import m, { ComponentTypes as C } from 'mithril';
 import dayjs, { Dayjs } from 'dayjs';
-import { VnodeObj, range } from '@/common/utils';
+import { VnodeLike, VnodeObj, range } from '@/common/utils';
 import { Calendar } from '@/view/calendar';
+import { t } from '@/common/lang/i18n';
 
-const quarterMap = ['', '1Q', '2Q', '3Q', '4Q', '1-2Q', '3-4Q'];
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import style from './ocw.module.css';
+
 const durationMap: [number, number][] = [
   [-1, -1],
   [3, 2], [5, 2], [9, 2], [11, 2], [3, 4], [9, 4]
@@ -38,27 +41,30 @@ const refreshQuarter = (vnode: VnodeObj<_A, _S>, y: number, q: number) => {
 };
 
 const CalendarCellView: C<{
+  date: Dayjs,
+  inSemester: boolean,
   periods: DayPeriodScheme[],
   jump: boolean[],
-  onSelectStart: () => void,
-  onSelectEnd: () => void,
+  onSelectStart?: () => void,
+  onSelectEnd?: () => void,
   onJumpChange: (index: number, value: boolean) => void,
 }> = {
   view(vnode) {
-    const { periods, jump, onSelectStart, onSelectEnd, onJumpChange } = vnode.attrs;
+    const { date, inSemester, periods, jump, onSelectStart, onSelectEnd, onJumpChange } = vnode.attrs;
     return m('div', [
+      m('div', String(date.date())),
       m('div', [
-        m('button', { onclick: () => onSelectStart() }, 'Start'),
-        m('button', { onclick: () => onSelectEnd() }, 'End'),
+        onSelectStart ? m('button.' + style['btn'], { onclick: onSelectStart }, t('mixin.ocw.cal.start')) : undefined,
+        onSelectEnd ? m('button.' + style['btn'], { onclick: onSelectEnd }, t('mixin.ocw.cal.end')) : undefined,
       ]),
-      m('div', periods.map(({ periodStart, periodEnd, location }, i) => {
+      inSemester && periods ? m('div', periods.map(({ periodStart, periodEnd, location }, i) => {
         return m('div', [
-          `P${periodStart}-${periodEnd}, ${location}`,
-          m('button', { onclick: () => onJumpChange(i, !jump[i]) },
-            jump[i] ? 'No Jump' : 'Jump'
+          m(jump[i] ? 'del' : 'span', `P${periodStart}-${periodEnd}, ${location}`),
+          m('button.' + style['btn'], { onclick: () => onJumpChange(i, !jump[i]) },
+            t(jump[i] ? 'mixin.ocw.cal.noJump' : 'mixin.ocw.cal.jump')
           )
         ]);
-      }))
+      })) : undefined,
     ]);
   },
 };
@@ -72,41 +78,73 @@ const CalendarGeneratorView: C<_A, _S> = {
 
   view(vnode) {
     const { ay, quarters, periods } = vnode.attrs.data;
-    const { startRange, endRange, jump } = vnode.state;
+    const { startRange, endRange, startDate, endDate, jump } = vnode.state;
     const periodsByDate = range(7).map((i) => periods.filter(x => x.day == i));
     return [
+
       m('div', [
-        m('span', `Calendar of AY ${ay}, `),
-        m('select', {
+        m('span', t('mixin.ocw.cal.title', { year: ay, quarter: t(`meta.quarter.${vnode.state.quarter}`) })),
+        quarters.length > 1 ? m('select', {
           value: vnode.state.quarter,
           onchange: (e: Event) => refreshQuarter(vnode, ay,
             Number((e.target as HTMLSelectElement).value))
-        }, quarters.map(q => m('option', { value: q }, quarterMap[q])))
+        }, quarters.map(q => m('option', { value: q }, t(`meta.quarter.${q}`)))) : undefined,
       ]),
+
       m(Calendar, {
         start: startRange,
         end: endRange,
         rowView(weekStart) {
-          return m('span', `${weekStart.format('YYYY-MM-DD')} - ${weekStart.add(6, 'days').format('YYYY-MM-DD')}`);
+          return [[
+            (weekStart.isAfter(startDate.startOf('week').add(-1, 'day')) && weekStart.isBefore(endDate)) ?
+              m('span', t('mixin.ocw.cal.weekIndex', {
+                index: weekStart.diff(startDate.startOf('week'), 'week') + 1,
+              })) : m('span', t('mixin.ocw.cal.weekOut')),
+            m('br'),
+            m('span', t('mixin.ocw.cal.weekRange', {
+              start: weekStart.add(1, 'day').format(t('meta.date.md')),
+              end: weekStart.add(5, 'days').format(t('meta.date.md')),
+            }))
+          ], undefined];
         },
-        cellView(date): m.Vnode {
-          return m(CalendarCellView, {
-            periods: periodsByDate[date.day()],
-            jump: jump.get(date.toISOString()) ?? [],
+        cellView(date) {
+          const afterStart = date.isAfter(startDate.add(-1, 'day'));
+          const beforeEnd = date.isBefore(endDate.add(1, 'day'));
+          const inSemester = afterStart && beforeEnd;
+          const curJump = jump.get(date.toISOString()) ?? [];
+          const curPeriods = periodsByDate[date.day()];
+          const jumpedCount = curJump.filter(x => !!x).length;
+          return [m(CalendarCellView, {
+            date,
+            inSemester,
+            periods: curPeriods,
+            jump: curJump,
             onJumpChange(index, value) {
               const arr = [...jump.get(date.toISOString()) ?? []];
               arr[index] = value;
               jump.set(date.toISOString(), arr);
             },
-            onSelectStart() {
-                
-            },
-            onSelectEnd() {
-                
-            },
-          }) as unknown as m.Vnode;
+            onSelectStart: beforeEnd ? () => {
+              vnode.state.startDate = date;
+            } : undefined,
+            onSelectEnd: afterStart ? () => {
+              vnode.state.endDate = date;
+            } : undefined,
+          }) as unknown as VnodeLike, [
+            style['cal-cell'],
+            style[
+              inSemester ? curPeriods.length ? (
+                jumpedCount == 0 ? 'course' : jumpedCount == curPeriods.length ? 'course-c': 'course-p'
+              ) : 'general' : 'disabled'
+            ]]];
         },
-      }, [])
+      }, []),
+
+      m('div', m('button.' + style['btn'], {
+        onclick: () => {
+          console.log(startDate, endDate, periodsByDate, jump);
+        }
+      }, t('mixin.ocw.calGen'))),
     ];
   },
 };
@@ -123,16 +161,15 @@ const OcwView: C<object, {
     return m('div.t2auth-anchor', [
       m('link', { rel: 'stylesheet', href: chrome.runtime.getURL('/mixin.css') }),
       m('link', { rel: 'stylesheet', href: chrome.runtime.getURL('/general.css') }),
-      m(Button, {
-        text: 'Generate iCalendar',
-        click() { vnode.state.modal = true; }
-      }),
+      m('button.' + style['btn'], {
+        onclick() { vnode.state.modal = true; }
+      }, t('mixin.ocw.calGen')),
       m(Modal, {
         isOpen: vnode.state.modal,
         onclose() {
           vnode.state.modal = false;
         },
-        header: 'Generate iCalendar'
+        header: t('mixin.ocw.calGen')
       }, [
         // m('pre', JSON.stringify(vnode.state.data, null, 2)),
         vnode.state.data ? m(CalendarGeneratorView, { data: vnode.state.data }) : undefined,

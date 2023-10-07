@@ -64,45 +64,6 @@ p.header-subtitle {
   letter-spacing: 12px;
 }
 
-/* table */
-
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-table,
-th,
-td {
-  border: 1px solid #ccc;
-}
-
-th,
-td {
-  padding: 4px;
-  text-align: center;
-}
-
-table th {
-  background-color: #f2f2f2;
-}
-
-table tr:first-child th:first-child {
-  border-top-left-radius: 10px;
-}
-
-table tr:first-child th:last-child {
-  border-top-right-radius: 10px;
-}
-
-table tr:last-child td:first-child {
-  border-bottom-left-radius: 10px;
-}
-
-table tr:last-child td:last-child {
-  border-bottom-right-radius: 10px;
-}
-
 
 /* modal */
 
