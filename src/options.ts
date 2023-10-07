@@ -7,8 +7,10 @@ const PageView: m.ComponentTypes = {
   view() {
     return m('div', [
       m(HeaderView, { page: 'Options Page' }),
-      m('div.std-border', m(LoginInfoPanel)),
-      m('div.std-border', m(OptionsPanel)),
+      m('div.std-border.pure-g.page-frame', [
+        m('div.pure-u-1.page-item-1-2', m(LoginInfoPanel)),
+        m('div.pure-u-1.page-item-1-2', m(OptionsPanel)),
+      ]),
       m(FooterView),
     ]);
   },

@@ -2,16 +2,13 @@ import { t } from '@/common/lang/i18n';
 import m, { ComponentTypes as C } from 'mithril';
 
 export const Button: C<{
-  text: string,
+  text?: string,
   click?: (ev: MouseEvent) => void,
 }> = {
   view(vnode) {
-    return m('input', {
-      type: 'button',
-      id: 'input',
-      value: vnode.attrs.text,
+    return m('button.button-small.pure-button', {
       onclick: vnode.attrs.click,
-    });
+    }, vnode.attrs.text, vnode.children);
   },
 };
 

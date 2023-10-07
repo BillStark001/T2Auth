@@ -67,7 +67,7 @@ const MatrixInfo: C<{
     const { rows, oninput: oi } = vnode.attrs;
     for (let i = 0; i < MATRIX_ROWS; i++) {
       matrixRows.push(
-        m('input.form-control.mat-input', {
+        m('input.mat-input', {
           type: 'text',
           size: '32',
           maxlength: String(MATRIX_COLS),
@@ -80,7 +80,10 @@ const MatrixInfo: C<{
         })
       );
     }
-    return m('div.col-sm-7', matrixRows);
+    return m('div.pure-control-group', [
+      m('label', t('page.options.loginInfo.table.key')),
+      m('fieldset.pure-group', { style: { display: 'inline-block' } }, matrixRows)
+    ]);
   }
 };
 
@@ -113,43 +116,44 @@ export const LoginInfoPanel: C<object, _S> = {
   },
 
   view(vnode) {
-    return m('div.options', [
-      m('div.option-group', [
-        m('div.option-key', t('page.options.loginInfo.username.key')),
-        m('input.form-control', {
-          type: 'text',
-          size: '32',
-          maxlength: '255',
-          placeholder: t('page.options.loginInfo.username.placeholder'),
-          value: vnode.state.account,
-          oninput(e: InputEvent) {
-            vnode.state.account = (e.target as HTMLInputElement).value;
-          }
-        })
-      ]),
-      m('div.option-group', [
-        m('div.option-key', t('page.options.loginInfo.passwd.key')),
-        m('input.form-control', {
-          type: 'password',
-          size: '32',
-          maxlength: '32',
-          placeholder: t('page.options.loginInfo.passwd.placeholder'),
-          value: vnode.state.password,
-          oninput(e: InputEvent) {
-            vnode.state.password = (e.target as HTMLInputElement).value;
-          }
-        })
-      ]),
-      m('div.separator'),
-      m('div.option-group', [
-        m('div.option-key', t('page.options.loginInfo.table.key')),
+    return m('form.options.pure-form.pure-form-aligned', [
+
+      m('fieldset', [
+        m('div.pure-control-group', [
+          m('label[for=username]', t('page.options.loginInfo.username.key')),
+          m('input#username', {
+            type: 'text',
+            size: '32',
+            maxlength: '255',
+            placeholder: t('page.options.loginInfo.username.placeholder'),
+            value: vnode.state.account,
+            oninput(e: InputEvent) {
+              vnode.state.account = (e.target as HTMLInputElement).value;
+            }
+          }),
+        ]),
+        m('div.pure-control-group', [
+          m('label[for=passwd]', t('page.options.loginInfo.passwd.key')),
+          m('input#passwd', {
+            type: 'password',
+            size: '32',
+            maxlength: '32',
+            placeholder: t('page.options.loginInfo.passwd.placeholder'),
+            value: vnode.state.password,
+            oninput(e: InputEvent) {
+              vnode.state.password = (e.target as HTMLInputElement).value;
+            }
+          })
+        ]),
         m(MatrixInfo, {
           rows: vnode.state.matrixCodes ?? [],
           oninput(i, v) {
             vnode.state.matrixCodes[i] = v;
           }
-        })
+        }),
+        
       ]),
+      
       m('div.separator'),
         
       

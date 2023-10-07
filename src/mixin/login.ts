@@ -10,8 +10,8 @@ const SEL_AUTH = [
   'input[type="button"][value="Agree ( Matrix / OTP / Soft Token Auth.)"]',
 ];
 
-const SEL_ACCOUNT = 'input.form-control[type="text"][name="usr_name"]';
-const SEL_PASSWD = 'input.form-control[type="password"][name="usr_password"]';
+const SEL_ACCOUNT = 'input[type="text"][name="usr_name"]';
+const SEL_PASSWD = 'input[type="password"][name="usr_password"]';
 const SEL_FORWARD = 'input[type="submit"][name="OK"]';
 
 const SEL_LOGOUT = 'a[href="/GetAccess/Logout"]';

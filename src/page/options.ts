@@ -1,7 +1,7 @@
 import { OptionsScheme, StorageOptionsScheme, getDefaultOptions } from '@/data/model';
 import m, { ComponentTypes as C } from 'mithril';
 import { getOptions, setOptions } from './sw';
-import { t } from '@/common/lang/i18n';
+import { supportedLanguages, t } from '@/common/lang/i18n';
 import { Button } from '@/view/general';
 import { VnodeObj, loadJson, saveToFile } from '@/common/utils';
 
@@ -25,7 +25,53 @@ export const OptionsPanel: C<object, _S> = {
 
   view(vnode) {
     const { options } = vnode.state;
-    return m('div.options', [
+    return m('form.options.pure-form.pure-form-aligned', [
+
+      m('fieldset', [
+        m('div.pure-control-group', [
+          m('label', t('page.options.loginInfo.username.key')),
+          m('div.pure-g.pure-group', { style: { width: '150px', display: 'inline-block' } }, [
+            m('input.pure-u-1', {
+              type: 'time'
+            }), m('input.pure-u-1', {
+              type: 'time'
+            }), m('input.pure-u-1', {
+              type: 'time'
+            }), m('input.pure-u-1', {
+              type: 'time'
+            }), m('input.pure-u-1', {
+              type: 'time'
+            }),
+          ]),m('div.pure-g.pure-group', { style: { width: '150px', display: 'inline-block' } }, [
+            m('input.pure-u-1', {
+              type: 'time'
+            }), m('input.pure-u-1', {
+              type: 'time'
+            }), m('input.pure-u-1', {
+              type: 'time'
+            }), m('input.pure-u-1', {
+              type: 'time'
+            }), m('input.pure-u-1', {
+              type: 'time'
+            }),
+          ]),
+
+          m('div.pure-control-group', [
+            m('label', t('page.options.loginInfo.username.key')),
+            m('input', {
+              type: 'date',
+            })
+          ]),
+          m('div.pure-control-group', [
+            m('label', t('page.options.lang.key')),
+            m('select', supportedLanguages.map(l => m('option', t('page.options.lang.value.' + l))))
+          ])
+
+        ]),
+
+      ]),
+
+      m('div.separator'),
 
       m('div[align=center]', [
         m('input[type=checkbox][name=direct-login][value=direct-login]', {
@@ -37,12 +83,8 @@ export const OptionsPanel: C<object, _S> = {
         m('label[for=direct-login]', t('page.options.directLogin'))
       ]),
 
-      // TODO
-
-
       m('div.separator'),
-        
-      
+
       m('div.btn-group[align=center]', [
         m(Button, {
           text: t('page.options.btn.submit'), async click() {
