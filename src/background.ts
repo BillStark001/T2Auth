@@ -21,5 +21,5 @@ async function bgmain() {
 bgmain();
 
 chrome.runtime.onConnect.addListener((port) => {
-  console.log(`Connection to background established on port ${port}.`);
+  console.log(`Connection to background established on port ${port.name}.`);
 });
