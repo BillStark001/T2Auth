@@ -1,6 +1,8 @@
 import m, { ComponentTypes as C } from 'mithril';
 import { VnodeLike } from '@/common/utils';
 import Portal from 'mithril-portal';
+import { getLanguage } from '@/page/sw';
+import { changeLanguage } from '@/common/lang/i18n';
 
 export type ModalAttrs = {
   header?: undefined | string | (() => VnodeLike),
@@ -38,4 +40,9 @@ export const Button: C<{
   },
 };
 
+export const autoSetLanguage = async () => {
+  const lang = await getLanguage();
+  window.localStorage.removeItem('i18nextLng');
+  changeLanguage(lang || undefined);
+};
 

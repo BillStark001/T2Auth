@@ -3,6 +3,8 @@ import { Footer, Header, Layout, MenuItem } from './view/layout';
 import { LoginInfoPanel } from './page/logininfo';
 import { OptionsPanel } from './page/options';
 import { t } from './common/lang/i18n';
+import { autoSetLanguage } from './view';
+import { tryConnect } from './common/message';
 
 type _S = {
   page: 'options' | 'loginInfo',
@@ -44,6 +46,8 @@ const PageView: C<object, _S> = {
 };
 
 async function optionsMain() {
+  await tryConnect();
+  await autoSetLanguage();
   m.mount(document.getElementById('app')!, PageView);
 }
 

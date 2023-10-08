@@ -2,8 +2,8 @@ import { OptionsScheme, StorageOptionsScheme, getDefaultOptions } from '@/data/m
 import m, { ComponentTypes as C } from 'mithril';
 import { getOptions, setOptions } from './sw';
 import { supportedLanguages, t } from '@/common/lang/i18n';
-import { Button } from '@/view';
-import { VnodeObj, loadJson, saveToFile } from '@/common/utils';
+import { Button, autoSetLanguage } from '@/view';
+import { VnodeObj, loadJson, range, saveToFile } from '@/common/utils';
 
 
 type _S = {
@@ -13,8 +13,19 @@ type _S = {
 const refresh = async (vnode: VnodeObj<object, _S>) => {
   const options = await getOptions();
   vnode.state.options = options;
+  await autoSetLanguage();
   m.redraw();
 };
+
+
+const _v = <T>(state: T, key: keyof T, checked?: boolean) => ({
+  [checked ? 'checked' : 'value']: state[key],
+  oninput(e: InputEvent) {
+    state[key] = (e.target as HTMLInputElement)[checked ? 'checked' : 'value'] as T[keyof T];
+  }
+});
+
+const periods = range(1, 11);
 
 export const OptionsPanel: C<object, _S> = {
   oninit(vnode) {
@@ -27,73 +38,54 @@ export const OptionsPanel: C<object, _S> = {
     const { options } = vnode.state;
     return m('form.options.pure-form.pure-form-aligned', [
 
-      m('fieldset', [
-        m('div.pure-control-group', [
-          m('label', t('page.loginInfo.username.key')),
-          m('div.pure-g.pure-group', { style: { width: '150px', display: 'inline-block' } }, [
-            m('input.pure-u-1', {
-              type: 'time'
-            }), m('input.pure-u-1', {
-              type: 'time'
-            }), m('input.pure-u-1', {
-              type: 'time'
-            }), m('input.pure-u-1', {
-              type: 'time'
-            }), m('input.pure-u-1', {
-              type: 'time'
-            }),
-          ]),m('div.pure-g.pure-group', { style: { width: '150px', display: 'inline-block' } }, [
-            m('input.pure-u-1', {
-              type: 'time'
-            }), m('input.pure-u-1', {
-              type: 'time'
-            }), m('input.pure-u-1', {
-              type: 'time'
-            }), m('input.pure-u-1', {
-              type: 'time'
-            }), m('input.pure-u-1', {
-              type: 'time'
-            }),
-          ]),
-
-          m('div.pure-control-group', [
-            m('label', t('page.loginInfo.username.key')),
-            m('input', {
-              type: 'date',
-            })
-          ]),
-          m('div.pure-control-group', [
-            m('label', t('page.options.lang.key')),
-            m('select', supportedLanguages.map(l => m('option', t('page.options.lang.value.' + l))))
-          ])
-
-        ]),
-
+      m('h2.content-subhead', t('page.options.section.basic')),
+      m('div.pure-control-group', [
+        m('label', t('page.options.lang.key')),
+        m('select', 
+          _v(options, 'lang'),
+          m('option', { value: '' }, t('page.options.lang.value.__null__')),
+          supportedLanguages.map(l => m('option', { value: l }, t('page.options.lang.value.' + l))))
+      ]),
+      m('div.pure-control-group', [
+        m('label', t('page.options.directLogin.key')),
+        m('span', [
+          m('input[type=checkbox][name=direct-login]', _v(options, 'directLogin', true)),
+          m('label[for=direct-login]', { style: { width: 'max-content', 'margin-left': '5px' }, }, t('page.options.directLogin.value'))
+        ])
       ]),
 
-      m('div.separator'),
+      
+      m('h2.content-subhead', t('page.options.section.period')),
+      m('fieldset', periods.map((p) => m('dov.pure-control-group', [
+        m('label', t('page.options.period.sub', { period: p })),
+        m('span', [
+          m('input[type=time]', _v(options.periodStart[p], 0)),
+          '-',
+          m('input[type=time]', _v(options.periodStart[p], 1)),
+        ])
+      ]))),
+      
+      // m('h2.content-subhead', t('page.options.section.quarter')),
 
-      m('div[align=center]', [
-        m('input[type=checkbox][name=direct-login][value=direct-login]', {
-          checked: options.directLogin,
-          onchange(e: InputEvent) {
-            options.directLogin = (e.target as HTMLInputElement).checked;
-          }
-        }),
-        m('label[for=direct-login]', t('page.options.directLogin'))
-      ]),
+      // m('div.pure-control-group', [
+      //   m('label', t('page.loginInfo.username.key')),
+      //   m('input', {
+      //     type: 'date',
+      //   })
+      // ]),
 
-      m('div.separator'),
 
-      m('div.btn-group[align=center]', [
+      m('div.btn-group', [
         m(Button, {
-          text: t('page.options.btn.submit'), async click() {
+          text: t('page.options.btn.submit'), async click(e: Event) {
+            e.preventDefault();
             await setOptions(options);
             await refresh(vnode);
           },
         }),
         m(Button, {
-          text: t('page.options.btn.restore'), click() {
+          text: t('page.options.btn.restore'), click(e: Event) {
+            e.preventDefault();
             const def: OptionsScheme = getDefaultOptions();
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             delete (def as any).loginInfo;
@@ -102,14 +94,16 @@ export const OptionsPanel: C<object, _S> = {
           },
         }),
         m(Button, {
-          text: t('page.options.btn.input'), async click() {
+          text: t('page.options.btn.input'), async click(e: Event) {
+            e.preventDefault();
             const ans = await loadJson<Partial<OptionsScheme>>();
             await setOptions(ans);
             await refresh(vnode);
           },
         }),
         m(Button, {
-          text: t('page.options.btn.output'), async click() {
+          text: t('page.options.btn.output'), async click(e: Event) {
+            e.preventDefault();
             const rawContent = getOptions();
             const content = JSON.stringify(rawContent);
             console.log(content);

@@ -88,12 +88,44 @@ export const langRes: LanguageResource = {
   page: {
     options: {
       title: ['Options Page', '設定ページ', '选项页面'],
+      section: {
+        basic: ['General', '一般', '通用'],
+        period: ['Periods', '時間割', '课程时刻表'],
+        quarter: ['Quarter Interval', 'クォーター期間', '学期期间'],
+      },
       btn: {
         'submit': ['Submit', '保存', '保存'],
         'restore': ['Restore to Default', 'デフォルトに設定', '设为默认'],
         'delete': ['Delete', '削除', '删除'],
         'input': ['Upload', 'アップロード', '上传并替换'],
         'output': ['Download', 'ダウンロード', '下载'],
+      },
+      directLogin: {
+        key: ['Auto Login', '自動ログイン', '自动登录'],
+        value: [
+          'Login when login page is opened',
+          'ログイン画面が開けたらすぐにログイン',
+          '在登录页面直接登录',
+        ]
+      },
+      lang: {
+        key: ['Language', '言語', '语言'],
+        value: {
+          en: ['English', '英語', '英文'],
+          ja: ['Japanese', '日本語', '日文'],
+          zh: ['Simplified Chinese', '簡体中国語', '简体中文'],
+          '__null__': ['Default', 'システムに従う', '跟随系统'],
+        }
+      },
+      period: {
+        sub: ['P{{period}}', '{{period}} 限目', '第 {{period}} 节'],
+      },
+    },
+    loginInfo: {
+      title: ['Account Info. Settings Page', 'アカウント設定ページ', '账户设置页面'],
+      section: {
+        basic: ['Account', 'アカウント', '账户'],
+        table: ['Matrix Info.', 'マトリクスコード', '矩阵信息'],
       },
       alert: {
         noUser: [
@@ -111,35 +143,6 @@ export const langRes: LanguageResource = {
           'マトリクスコード第 {{line}} 行目にエラーがあります。',
           '在矩阵信息第 {{line}} 行发现错误。',
         ]
-      },
-      directLogin: [
-        'Login when login page is opened',
-        'ログイン画面が開けたらすぐにログイン',
-        '在登录页面直接登录',
-      ],
-      lang: {
-        key: ['Language', '言語', '语言'],
-        value: {
-          en: ['English', '英語', '英文'],
-          ja: ['Japanese', '日本語', '日文'],
-          zh: ['Simplified Chinese', '簡体中国語', '简体中文'],
-          '': ['Default', 'システムに従う', '跟随系统'],
-        }
-      },
-      period: {
-        length: ['Period Length', '1 時限の長さ', '一节课的长度'],
-        start: ['Periods Start', '時限の始まり', '课程开始时间'],
-        sub: ['P{{period}}', '{{period}} 限目', '第 {{period}} 节'],
-      },
-      quarter: {
-        interval: ['Quarter Interval', 'クォーター期間', '学期期间'],
-      }
-    },
-    loginInfo: {
-      title: ['Account Info. Settings Page', 'アカウント設定ページ', '账户设置页面'],
-      section: {
-        basic: ['Account', 'アカウント', '账户'],
-        table: ['Matrix Info.', 'マトリクスコード', '矩阵信息'],
       },
       username: {
         key: ['Account\n(Student No.)', 'アカウント\n（学籍番号）', '账户\n（学生卡号）'],

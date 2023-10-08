@@ -16,7 +16,7 @@ export const Header: C<{ subtitle?: VnodeLike }> = {
 
 export const Footer: C = {
   view() {
-    return m('div', {
+    return m('div.footer', {
       style: {
         margin: 'auto',
         textAlign: 'center',

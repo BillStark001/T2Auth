@@ -37,3 +37,6 @@ export const getAllInfo = useMessageHandler(async () => [
   await _getOptions(),
   await _getLoginInfo(),
 ] as [OptionsScheme, LoginInfoScheme], 'getAllInfo');
+
+
+export const getLanguage = () => getOptions().then(o => o?.lang ?? '');

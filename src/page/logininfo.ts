@@ -21,11 +21,11 @@ const checkAndFormInfo = (acc: string, pwd: string, codes: string[]): [
   const alerts: string[] = [];
   if (acc.length == 0) {
     vt = false;
-    alerts.push(t('page.options.alert.noUser'));
+    alerts.push(t('page.loginInfo.alert.noUser'));
   }
   if (pwd.length == 0) {
     vt = false;
-    alerts.push(t('page.options.alert.noPassword'));
+    alerts.push(t('page.loginInfo.alert.noPassword'));
   }
   let mat = '';
   for (let i = 0; i < MATRIX_ROWS; ++i) {
@@ -36,15 +36,15 @@ const checkAndFormInfo = (acc: string, pwd: string, codes: string[]): [
     } else {
       for (let j = 0; j < MATRIX_COLS; ++j)
         if (
-          tmat.charCodeAt(i) > 'Z'.charCodeAt(0) ||
-          tmat.charCodeAt(i) < 'A'.charCodeAt(0)
+          tmat.charCodeAt(j) > 'Z'.charCodeAt(0) ||
+          tmat.charCodeAt(j) < 'A'.charCodeAt(0)
         )
           vt1 = false;
     }
     mat = mat + tmat;
     if (vt1 != true) {
       vt = false;
-      alerts.push(t('page.options.alert.invalidMat', { line: i + 1 }));
+      alerts.push(t('page.loginInfo.alert.invalidMat', { line: i + 1 }));
     }
   }
   return [
@@ -122,42 +122,39 @@ export const LoginInfoPanel: C<object, _S> = {
   view(vnode) {
     return m('form.options.pure-form.pure-form-aligned', [
 
-      m('fieldset', [
+      m('h2.content-subhead', t('page.loginInfo.section.basic')),
 
-        m('h2.content-subhead', t('page.loginInfo.section.basic')),
-
-        m('div.pure-control-group', [
-          m('label', t('page.loginInfo.username.key')),
-          m('input', {
-            type: 'text',
-            maxlength: '255',
-            placeholder: t('page.loginInfo.username.placeholder'),
-            ..._v(vnode.state, 'account'),
-          }),
-        ]),
-        m('div.pure-control-group', [
-          m('label', t('page.loginInfo.passwd.key')),
-          m('input', {
-            type: 'password',
-            maxlength: '32',
-            placeholder: t('page.loginInfo.passwd.placeholder'),
-            ..._v(vnode.state, 'password'),
-          })
-        ]),
-
-        m('h2.content-subhead', t('page.loginInfo.section.table')),
-        m(MatrixInfo, {
-          rows: vnode.state.matrixCodes ?? [],
-          oninput(i, v) {
-            vnode.state.matrixCodes[i] = v;
-          }
+      m('div.pure-control-group', [
+        m('label', t('page.loginInfo.username.key')),
+        m('input', {
+          type: 'text',
+          maxlength: '255',
+          placeholder: t('page.loginInfo.username.placeholder'),
+          ..._v(vnode.state, 'account'),
         }),
       ]),
+      m('div.pure-control-group', [
+        m('label', t('page.loginInfo.passwd.key')),
+        m('input', {
+          type: 'password',
+          maxlength: '32',
+          placeholder: t('page.loginInfo.passwd.placeholder'),
+          ..._v(vnode.state, 'password'),
+        })
+      ]),
         
+      m('h2.content-subhead', t('page.loginInfo.section.table')),
+      m(MatrixInfo, {
+        rows: vnode.state.matrixCodes ?? [],
+        oninput(i, v) {
+          vnode.state.matrixCodes[i] = v;
+        }
+      }),
       
-      m('div.btn-group[align=center]', [
+      m('div.btn-group', [
         m(Button, {
-          text: t('page.options.btn.submit'), async click() {
+          text: t('page.options.btn.submit'), async click(e: Event) {
+            e.preventDefault();
             const [vt, alerts, payload] = checkAndFormInfo(
               vnode.state.account, vnode.state.password, vnode.state.matrixCodes
             );
@@ -170,21 +167,24 @@ export const LoginInfoPanel: C<object, _S> = {
           },
         }),
         m(Button, {
-          text: t('page.options.btn.delete'), async click() {
+          text: t('page.options.btn.delete'), async click(e: Event) {
+            e.preventDefault();
             const [, , payload] = checkAndFormInfo('', '', []);
             await setLoginInfo(payload);
             refresh(vnode);
           },
         }),
         m(Button, {
-          text: t('page.options.btn.input'), async click() {
+          text: t('page.options.btn.input'), async click(e: Event) {
+            e.preventDefault();
             const ans = await loadJson<Partial<LoginInfoScheme>>();
             await setLoginInfo({ ...getDefaultLoginInfo(), ...ans });
             await refresh(vnode);
           },
         }),
         m(Button, {
-          text: t('page.options.btn.output'), async click() {
+          text: t('page.options.btn.output'), async click(e: Event) {
+            e.preventDefault();
             const rawContent = await getLoginInfo();
             const content = JSON.stringify(rawContent);
             const blob = new Blob([content], {
