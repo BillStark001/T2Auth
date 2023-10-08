@@ -38,6 +38,39 @@ export const range = (startOrEnd: number, end?: number, step: number = 1) => {
   return result;
 };
 
+// html
+
+export const parseHtmlTableToObjects = (table: HTMLTableElement) => {
+  const columnNames: string[] = [];
+  const tableData: Record<string, string>[] = [];
+
+  const rows = table.getElementsByTagName('tr');
+  
+  // 提取第一行的列名
+  const firstRow = rows[0];
+  const cells = firstRow.getElementsByTagName('th');
+  for (let i = 0; i < cells.length; i++) {
+    columnNames.push(cells[i].textContent || '');
+  }
+
+  // 逐行解析数据
+  for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
+    const rowData: Record<string, string> = {};
+    const row = rows[rowIndex];
+    const cells = row.getElementsByTagName('td');
+    
+    for (let colIndex = 0; colIndex < cells.length; colIndex++) {
+      const columnName = columnNames[colIndex];
+      const cellValue = cells[colIndex].textContent || '';
+      rowData[columnName] = cellValue;
+    }
+
+    tableData.push(rowData);
+  }
+
+  return tableData;
+};
+
 export const querySelectors = <T extends Element>(target: Document, selectors: string[]) => {
   let ans = null;
   for (const s of selectors) {
@@ -115,3 +148,5 @@ export function decryptAES(word: string, keystr: string, ivstr: string) {
   }
   return decryptedStr.toString();
 }
+
+
