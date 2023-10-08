@@ -27,8 +27,8 @@ const EwsView: C<object, {
   },
   view(vnode) {
     return m('div.t2auth-anchor', [
-      m('link', { rel: 'stylesheet', href: chrome.runtime.getURL('/mixin.css') }),
-      m('link', { rel: 'stylesheet', href: chrome.runtime.getURL('/general.css') }),
+      // m('link', { rel: 'stylesheet', href: chrome.runtime.getURL('/pure-min.css') }),
+      // m('link', { rel: 'stylesheet', href: chrome.runtime.getURL('/style.css') }),
       m('button.' + style['btn'], {
         onclick(e: Event) { 
           e.preventDefault();

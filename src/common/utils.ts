@@ -41,7 +41,7 @@ export const range = (startOrEnd: number, end?: number, step: number = 1) => {
 
 // html
 
-export const parseHtmlTableToObjects = (table: HTMLTableElement) => {
+export const parseHtmlTableToObjects = (table: HTMLTableElement, orig?: boolean) => {
   const columnNames: string[] = [];
   const tableData: Record<string, string>[] = [];
 
@@ -51,7 +51,8 @@ export const parseHtmlTableToObjects = (table: HTMLTableElement) => {
   const firstRow = rows[0];
   const cells = firstRow.getElementsByTagName('th');
   for (let i = 0; i < cells.length; i++) {
-    columnNames.push(cells[i].textContent || '');
+    const nameRaw = cells[i].textContent || '';
+    columnNames.push(orig ? nameRaw : nameRaw.replace(/\r?\n/g, '').trim());
   }
 
   // 逐行解析数据
@@ -62,7 +63,8 @@ export const parseHtmlTableToObjects = (table: HTMLTableElement) => {
     
     for (let colIndex = 0; colIndex < cells.length; colIndex++) {
       const columnName = columnNames[colIndex];
-      const cellValue = cells[colIndex].textContent || '';
+      const cellValueRaw = cells[colIndex].textContent || '';
+      const cellValue = orig ? cellValueRaw : cellValueRaw.replace(/\r?\n/g, '').trim();
       rowData[columnName] = cellValue;
     }
 

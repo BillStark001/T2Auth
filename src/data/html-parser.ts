@@ -46,7 +46,7 @@ export const getEwsRawData = (): EwsRawData => {
     for (const p of c.childNodes) {
       for (const cls of (p as HTMLElement).classList ?? []) {
         if (cls.startsWith('tt')) {
-          ans[cls] = p.textContent || '';
+          ans[cls] = (p as HTMLElement).innerText || '';
           break;
         }
       }
@@ -55,7 +55,7 @@ export const getEwsRawData = (): EwsRawData => {
   });
 
   const timeCellsRaw = [...calendarTables[0]?.querySelectorAll(SEL_ETC_CELL_TIME) ?? []]
-    .map(x => (x.textContent ?? '').split('\n').filter(x => !!x) as [string, string])
+    .map(x => ((x as HTMLElement).innerText ?? '').split('\n').filter(x => !!x) as [string, string])
     .filter(x => x.length == 2);
   const timeTable = Object.fromEntries(timeCellsRaw.map(([i, t]) => {
     let [ts, te] = t.split(/-~～ー/, 2);

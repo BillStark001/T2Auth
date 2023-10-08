@@ -146,8 +146,90 @@ export const getOcwParsedData = (raw?: Record<string, string>): CourseInfoScheme
 
 };
 
+const reQuarterPrefix = /^([\d\-~～－]+Q)[:：]\s*/;
+
 export const getEwsParsedData = (raw?: EwsRawData): [CourseInfoScheme[], Record<string, [string, string]>] => {
   const { dataByCalendar, dataByCourse, timeTable } = raw ?? getEwsRawData();
-  console.log(dataByCalendar, dataByCourse, timeTable);
-  return [[], timeTable];
+  const parsedData: CourseInfoScheme[] = [];
+
+  // table data
+  for (const raw of dataByCourse) {
+    parsedData.push({
+      __raw__: raw,
+      code: raw['科目コード'] ?? raw['Course number'] ?? '',
+      titleJa: raw['授業科目名'] ?? '',
+      titleEn: raw['Course Title'] ?? '',
+      ay: -1,
+      quarters: parseAcademicQuarter(raw['Q'] ?? ''),
+      periods: parseDayPeriod(raw['曜日・時限'] ?? raw['Class Days/Periods'] ?? ''),
+    });
+  }
+
+  // calendar data
+  const locationMap: Record<string, Set<string>> = {};
+  const quarterMap: Record<string, Set<string>> = {};
+  const courseMap: Record<string, Record<string, string>> = {};
+
+  // filter
+  for (const raw of dataByCalendar) {
+    const code = raw['ttSinkokuNo'].trim();
+
+    if (!code)
+      continue;
+
+    courseMap[code] = { ...courseMap[code] ?? {}, ...raw };
+    if (locationMap[code] == undefined)
+      locationMap[code] = new Set();
+    if (quarterMap[code] == undefined)
+      quarterMap[code] = new Set();
+
+    outerLoop: for (const datum of raw['ttYoubi']?.split?.('\n') ?? []) {
+      if (!datum)
+        continue;
+      // merge quarter
+      reQuarterPrefix.lastIndex = 0;
+      const [quarterRaw, quarter] = reQuarterPrefix.exec(datum) ?? ['', ''];
+      if (!quarterRaw)
+        continue;
+      quarterMap[code].add(quarter);
+
+      // merge period and location
+      const location = datum.substring(quarterRaw.length).trim();
+      if (!location)
+        continue;
+      for (const l of locationMap[code]) {
+        if (l.startsWith(location))
+          continue outerLoop;
+      }
+      let flag = false;
+      for (const l of locationMap[code]) {
+        if (l && location.startsWith(l)) {
+          locationMap[code].delete(l);
+          locationMap[code].add(location);
+          flag = true;
+          break;
+        }
+      }
+      if (!flag)
+        locationMap[code].add(location);
+    }
+  }
+
+  // merge
+  for (const [code, raw] of Object.entries(courseMap)) {
+    parsedData.push({
+      __raw__: raw,
+      code, 
+      titleEn: raw['ttKamokuName'],
+      titleJa: raw['ttKamokuName'],
+      ay: -2,
+      periods: parseDayPeriod([...locationMap[code]].join(' ')),
+      quarters: [...quarterMap[code]]
+        .map(x => parseAcademicQuarter(x))
+        .reduce((p, c) => [...p, ...c], []),
+    });
+  }
+
+  // return
+  return [parsedData, timeTable];
 };
