@@ -14,7 +14,7 @@ import { t } from '@/common/lang/i18n';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import style from './ocw.module.css';
+import style from './mixin.module.css';
 import { generateCalendarFile } from '@/data/calendar';
 import { getOptions } from '@/page/sw';
 import { OptionsScheme, getDefaultOptions } from '@/data/model';

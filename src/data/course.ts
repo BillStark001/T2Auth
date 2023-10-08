@@ -1,4 +1,4 @@
-import { getOcwRawData } from './html-parser';
+import { EwsRawData, getEwsRawData, getOcwRawData } from './html-parser';
 
 const reDayPeriod = /(月|火|水|木|金|土|日|Mon|Tue|Wed|Thu|Thur|Thr|Fri|Sat|Sun)(\d{1,2})(?:-(\d{1,2}))?/g;
 
@@ -144,4 +144,10 @@ export const getOcwParsedData = (raw?: Record<string, string>): CourseInfoScheme
     __raw__: raw
   };
 
+};
+
+export const getEwsParsedData = (raw?: EwsRawData): [CourseInfoScheme[], Record<string, [string, string]>] => {
+  const { dataByCalendar, dataByCourse, timeTable } = raw ?? getEwsRawData();
+  console.log(dataByCalendar, dataByCourse, timeTable);
+  return [[], timeTable];
 };

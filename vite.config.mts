@@ -36,6 +36,8 @@ const manifest = defineManifest({
         '*://portal.titech.ac.jp/*',
         '*://www.ocw.titech.ac.jp/*',
         '*://ocw.titech.ac.jp/*',
+        '*://kyomu0.gakumu.titech.ac.jp/*',
+        '*://kyomu.gakumu.titech.ac.jp/*',
       ],
       all_frames: true,
       run_at: 'document_end',

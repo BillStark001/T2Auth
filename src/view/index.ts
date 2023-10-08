@@ -4,6 +4,10 @@ import Portal from 'mithril-portal';
 import { getLanguage } from '@/page/sw';
 import { changeLanguage } from '@/common/lang/i18n';
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import style from './view.module.css';
+
 export type ModalAttrs = {
   header?: undefined | string | (() => VnodeLike),
   isOpen?: boolean,
@@ -16,13 +20,13 @@ export const Modal: C<ModalAttrs> = {
     if (!isOpen)
       return undefined;
     return m(Portal, [
-      m('div.modal-overlay', 
-        m('div.modal', [
-          m('div.modal-header', [
+      m('div.' + style['modal-overlay'], 
+        m('div.' + style['modal'], [
+          m('div.' + style['modal-header'], [
             header && typeof header === 'function' ? header() : m('h2', header),
-            m('span.close-button', { onclick: () => onclose() }, '×')
+            m('span.' + style['close-button'], { onclick: () => onclose() }, '×')
           ]),
-          m('div.modal-body', vnode.children),
+          m('div.' + style['modal-body'], vnode.children),
         ]),
       )
     ]);
