@@ -80,14 +80,52 @@ export const langRes: LanguageResource = {
 
     }
   },
+  menu: {
+    title: ['Navigation', 'ナビ', '导航'],
+    options: ['Options', '設定', '选项'],
+    loginInfo: ['Account Info', 'アカウント', '账户设置'],
+  },
   page: {
     options: {
+      title: ['Options Page', '設定ページ', '选项页面'],
+      section: {
+        basic: ['General', '一般', '通用'],
+        period: ['Periods', '時間割', '课程时刻表'],
+        quarter: ['Quarter Interval', 'クォーター期間', '学期期间'],
+      },
       btn: {
         'submit': ['Submit', '保存', '保存'],
         'restore': ['Restore to Default', 'デフォルトに設定', '设为默认'],
         'delete': ['Delete', '削除', '删除'],
         'input': ['Upload', 'アップロード', '上传并替换'],
         'output': ['Download', 'ダウンロード', '下载'],
+      },
+      directLogin: {
+        key: ['Auto Login', '自動ログイン', '自动登录'],
+        value: [
+          'Login when login page is opened',
+          'ログイン画面が開けたらすぐにログイン',
+          '在登录页面直接登录',
+        ]
+      },
+      lang: {
+        key: ['Language', '言語', '语言'],
+        value: {
+          en: ['English', '英語', '英文'],
+          ja: ['Japanese', '日本語', '日文'],
+          zh: ['Simplified Chinese', '簡体中国語', '简体中文'],
+          '__null__': ['Default', 'システムに従う', '跟随系统'],
+        }
+      },
+      period: {
+        sub: ['P{{period}}', '{{period}} 限目', '第 {{period}} 节'],
+      },
+    },
+    loginInfo: {
+      title: ['Account Info. Settings Page', 'アカウント設定ページ', '账户设置页面'],
+      section: {
+        basic: ['Account', 'アカウント', '账户'],
+        table: ['Matrix Info.', 'マトリクスコード', '矩阵信息'],
       },
       alert: {
         noUser: [
@@ -106,26 +144,19 @@ export const langRes: LanguageResource = {
           '在矩阵信息第 {{line}} 行发现错误。',
         ]
       },
-      loginInfo: {
-        username: {
-          key: ['Account\n(Student No.)', 'アカウント\n（学籍番号）', '账户\n（学生卡号）'],
-          placeholder: ['Account', 'アカウント', '账户'],
-        },
-        passwd: {
-          key: ['Password', 'パスワード', '密码'],
-          placeholder: ['Password', 'パスワード', '密码'],
-        },
-        table: {
-          key: ['Matrix Info.', 'マトリクスコード', '矩阵信息'],
-          placeholder: ['Row {{row}}', '第 {{row}} 行', '第 {{row}} 行'],
-        }
+      username: {
+        key: ['Account\n(Student No.)', 'アカウント\n（学籍番号）', '账户\n（学生卡号）'],
+        placeholder: ['Account', 'アカウント', '账户'],
       },
-      directLogin: [
-        'Login when login page is opened',
-        'ログイン画面が開けたらすぐにログイン',
-        '在登录页面直接登录',
-      ]
-    }
+      passwd: {
+        key: ['Password', 'パスワード', '密码'],
+        placeholder: ['Password', 'パスワード', '密码'],
+      },
+      table: {
+        key: ['Matrix Info.', 'マトリクスコード', '矩阵信息'],
+        placeholder: ['Row {{row}}', '第 {{row}} 行', '第 {{row}} 行'],
+      }
+    },
   }
 };
 

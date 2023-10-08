@@ -4,7 +4,8 @@ import { Component, Vnode } from 'mithril';
 
 type _NoLifecycle<T> = Omit<T, keyof Component>;
 export type VnodeObj<Attrs, State> = Vnode<Attrs, _NoLifecycle<Component<Attrs, State> & State>>;
-export type VnodeLike = string | undefined | Vnode | VnodeLike[];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type VnodeLike = string | undefined | Vnode<any, any> | VnodeLike[];
 
 /**
  * 
@@ -112,6 +113,25 @@ export const loadJson = <T>() => new Promise<T>((res, rej) => {
   };
   inp.click();
 });
+
+const timeRegex = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/;
+export const parseTimeInput = (inputValue: string): [number, number, number | undefined] | undefined => {
+
+  timeRegex.lastIndex = 0;
+  const match = timeRegex.exec(inputValue);
+
+  if (match) {
+    const hours = parseInt(match[1], 10);
+    const minutes = parseInt(match[2], 10);
+    const seconds = match[3] ? parseInt(match[3], 10) : undefined;
+
+    if (hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59 && (!seconds || (seconds >= 0 && seconds <= 59))) {
+      return [hours, minutes, seconds];
+    }
+  }
+
+  return undefined;
+};
 
 
 export function getFingerPrint(key: string, iv: string) {

@@ -51,8 +51,7 @@ export const encryptInfo = (scheme: LoginInfoScheme, k: string, i: string): Enco
 
 export type OptionsScheme = {
   directLogin: boolean,
-  periodLength: number,
-  periodStart: number[],
+  periodStart: [string, string][],
   quarterInterval: { [quarter: string]: [number, number, number, number] }, // month, date, month, date
   lang: string,
 };
@@ -61,25 +60,22 @@ export type StorageOptionsScheme = OptionsScheme & {
   loginInfo: EncodedLoginInfoScheme,
 };
 
-
-
 export const getDefaultOptions = (): StorageOptionsScheme => ({
   loginInfo: getDefaultLoginInfo(),
   directLogin: false,
-  periodLength: 50 * 60,
   periodStart: [
-    0, 
-    8 * 60 + 50, 
-    9 * 60 + 40,
-    10 * 60 + 45,
-    11 * 60 + 35,
-    13 * 60 + 30,
-    14 * 60 + 20,
-    15 * 60 + 25,
-    16 * 60 + 15,
-    17 * 60 + 15,
-    18 * 60 + 5,
+    ['00:00', '00:00'],
+    ['08:50', '09:40'],
+    ['09:40', '10:30'],
+    ['10:45', '11:35'],
+    ['11:35', '12:25'],
+    ['13:30', '14:20'],
+    ['14:20', '15:10'],
+    ['15:25', '16:15'],
+    ['16:15', '17:05'],
+    ['17:15', '18:05'],
+    ['18:50', '18:55']
   ],
-  quarterInterval: {},
+  quarterInterval: {}, // TODO
   lang: '',
 });
