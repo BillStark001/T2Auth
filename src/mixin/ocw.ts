@@ -8,13 +8,16 @@ import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-import { VnodeLike, VnodeObj, range } from '@/common/utils';
+import { VnodeObj, range, saveToFile } from '@/common/utils';
 import { Calendar } from '@/view/calendar';
 import { t } from '@/common/lang/i18n';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import style from './ocw.module.css';
+import { generateCalendarFile } from '@/data/calendar';
+import { getOptions } from '@/page/sw';
+import { OptionsScheme, getDefaultOptions } from '@/data/model';
 
 const durationMap: [number, number][] = [
   [-1, -1],
@@ -22,6 +25,7 @@ const durationMap: [number, number][] = [
 ];
 
 type _A = {
+  periodStart: [string, string][],
   data: CourseInfoScheme
 };
 type _S = {
@@ -30,24 +34,23 @@ type _S = {
   endRange: Dayjs,
   startDate: Dayjs,
   endDate: Dayjs,
-  jump: Map<string, boolean[]>,
+  jump: Map<string, boolean>[],
 };
 
-const refreshQuarter = (vnode: VnodeObj<_A, _S>, y: number, q: number) => {
+const refreshQuarter = async (vnode: VnodeObj<_A, _S>, y: number, q: number) => {
   const [ds, de] = durationMap[q];
   const quarterStart = dayjs(new Date(y, ds, 1, 0, 0, 0)).tz('Asia/Tokyo');
-  console.log(quarterStart, quarterStart.toISOString());
   Object.assign(vnode.state, {
     quarter: q,
     startRange: quarterStart,
     endRange: quarterStart.add(de, 'months').add(7, 'days'),
     startDate: quarterStart,
     endDate: quarterStart.add(de, 'months'),
-    jump: new Map(),
+    jump: range(vnode.attrs.data.periods.length).map(() => new Map()),
   } as _S);
 };
 
-const CalendarCellView: C<{
+type _A_C = {
   date: Dayjs,
   inSemester: boolean,
   periods: DayPeriodScheme[],
@@ -55,7 +58,9 @@ const CalendarCellView: C<{
   onSelectStart?: () => void,
   onSelectEnd?: () => void,
   onJumpChange: (index: number, value: boolean) => void,
-}> = {
+};
+
+const CalendarCellView: C<_A_C> = {
   view(vnode) {
     const { date, inSemester, periods, jump, onSelectStart, onSelectEnd, onJumpChange } = vnode.attrs;
     return m('div', [
@@ -84,9 +89,14 @@ const CalendarGeneratorView: C<_A, _S> = {
   },
 
   view(vnode) {
+    const { periodStart } = vnode.attrs;
     const { ay, quarters, periods } = vnode.attrs.data;
     const { startRange, endRange, startDate, endDate, jump } = vnode.state;
-    const periodsByDate = range(7).map((i) => periods.filter(x => x.day == i));
+    const periodsByDate = range(7).map((i) =>
+      periods
+        .map((x, i) => [x, i] as [DayPeriodScheme, number])
+        .filter(([x,]) => x.day == i)
+    );
     return [
 
       m('div', [
@@ -121,17 +131,16 @@ const CalendarGeneratorView: C<_A, _S> = {
           const beforeEnd = date.isBefore(endDate.add(1, 'day'));
           const inSemester = afterStart && beforeEnd;
           const curPeriods = periodsByDate[date.day()];
-          const jumpedCount = (jump.get(isoStr) ?? []).filter(x => !!x).length;
-          
+          const jumpedArr = curPeriods.map(([, i]) => !!jump[i].get(isoStr));
+          const jumpedCount = jumpedArr.filter(x => x).length;
+
           return [m(CalendarCellView, {
             date,
             inSemester,
-            periods: curPeriods,
-            jump: [...jump.get(isoStr) ?? []],
+            periods: curPeriods.map(([x,]) => x),
+            jump: jumpedArr,
             onJumpChange(index, value) {
-              const arr = [...jump.get(isoStr) ?? []];
-              arr[index] = value;
-              jump.set(isoStr, arr);
+              jump[curPeriods[index][1]].set(isoStr, value);
               m.redraw();
             },
             onSelectStart: beforeEnd ? () => {
@@ -142,19 +151,31 @@ const CalendarGeneratorView: C<_A, _S> = {
               vnode.state.endDate = date;
               m.redraw();
             } : undefined,
-          }) as unknown as VnodeLike, [
+          } as _A_C), [
             style['cal-cell'],
             style[
               inSemester ? curPeriods.length ? (
-                jumpedCount == 0 ? 'course' : jumpedCount == curPeriods.length ? 'course-c': 'course-p'
+                jumpedCount == 0 ? 'course' : jumpedCount == curPeriods.length ? 'course-c' : 'course-p'
               ) : 'general' : 'disabled'
-            ]]];
+            ]]
+          ];
         },
       }, []),
 
       m('div', m('button.' + style['btn'], {
         onclick: () => {
-          console.log(startDate, endDate, periodsByDate, jump);
+          const ics = generateCalendarFile(
+            vnode.attrs.data,
+            startDate,
+            endDate,
+            jump.map((m) => [...m.keys()].filter(k => !!m.get(k)).map(x => dayjs(x))),
+            periodStart,
+          );
+          const blob = new Blob([ics], {
+            type: 'text/plain;charset=utf-8',
+          });
+          const { code, ay, quarters } = vnode.attrs.data;
+          saveToFile(blob, `${code.replace(/\./g, '_')}_${ay}_${quarters.join('_')}.ics`);
         }
       }, t('mixin.ocw.calGen'))),
     ];
@@ -164,10 +185,16 @@ const CalendarGeneratorView: C<_A, _S> = {
 const OcwView: C<object, {
   modal: boolean,
   data: CourseInfoScheme,
+  options: OptionsScheme,
 }> = {
   oninit(vnode) {
     vnode.state.modal = false;
     vnode.state.data = getOcwParsedData();
+    vnode.state.options = getDefaultOptions();
+    getOptions().then((o) => {
+      vnode.state.options = o;
+      m.redraw();
+    });
   },
   view(vnode) {
     return m('div.t2auth-anchor', [
@@ -183,7 +210,7 @@ const OcwView: C<object, {
         },
         header: t('mixin.ocw.calGen')
       }, [
-        vnode.state.data ? m(CalendarGeneratorView, { data: vnode.state.data }) : undefined,
+        vnode.state.data ? m(CalendarGeneratorView, { data: vnode.state.data, periodStart: vnode.state.options.periodStart }) : undefined,
       ])
     ]);
   },
