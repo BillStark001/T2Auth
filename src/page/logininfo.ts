@@ -1,4 +1,4 @@
-import { Button } from '@/view/general';
+import { Button } from '@/view';
 import m, { ComponentTypes as C } from 'mithril';
 import { getAllInfo, setLoginInfo, getLoginInfo } from './sw';
 import { VnodeObj, loadJson, saveToFile } from '@/common/utils';
@@ -67,11 +67,11 @@ const MatrixInfo: C<{
     const { rows, oninput: oi } = vnode.attrs;
     for (let i = 0; i < MATRIX_ROWS; i++) {
       matrixRows.push(
-        m('input.mat-input', {
+        m('input', {
           type: 'text',
           size: '32',
           maxlength: String(MATRIX_COLS),
-          placeholder: t('page.options.loginInfo.table.placeholder', { row: i + 1 }),
+          placeholder: t('page.loginInfo.table.placeholder', { row: i + 1 }),
           value: rows[i],
           oninput(e: InputEvent) {
             oi(i, ((e.target as HTMLInputElement).value ?? '')
@@ -80,10 +80,7 @@ const MatrixInfo: C<{
         })
       );
     }
-    return m('div.pure-control-group', [
-      m('label', t('page.options.loginInfo.table.key')),
-      m('fieldset.pure-group', { style: { display: 'inline-block' } }, matrixRows)
-    ]);
+    return m('fieldset.pure-group[align=center].mat-input', matrixRows);
   }
 };
 
@@ -110,6 +107,13 @@ const refresh = async (vnode: VnodeObj<object, _S>) => {
   m.redraw();
 };
 
+const _v = <T>(state: T, key: keyof T) => ({
+  value: state[key],
+  oninput(e: InputEvent) {
+    state[key] = (e.target as HTMLInputElement).value as T[keyof T];
+  }
+});
+
 export const LoginInfoPanel: C<object, _S> = {
   async oninit(vnode) {
     refresh(vnode);
@@ -119,42 +123,36 @@ export const LoginInfoPanel: C<object, _S> = {
     return m('form.options.pure-form.pure-form-aligned', [
 
       m('fieldset', [
+
+        m('h2.content-subhead', t('page.loginInfo.section.basic')),
+
         m('div.pure-control-group', [
-          m('label[for=username]', t('page.options.loginInfo.username.key')),
-          m('input#username', {
+          m('label', t('page.loginInfo.username.key')),
+          m('input', {
             type: 'text',
-            size: '32',
             maxlength: '255',
-            placeholder: t('page.options.loginInfo.username.placeholder'),
-            value: vnode.state.account,
-            oninput(e: InputEvent) {
-              vnode.state.account = (e.target as HTMLInputElement).value;
-            }
+            placeholder: t('page.loginInfo.username.placeholder'),
+            ..._v(vnode.state, 'account'),
           }),
         ]),
         m('div.pure-control-group', [
-          m('label[for=passwd]', t('page.options.loginInfo.passwd.key')),
-          m('input#passwd', {
+          m('label', t('page.loginInfo.passwd.key')),
+          m('input', {
             type: 'password',
-            size: '32',
             maxlength: '32',
-            placeholder: t('page.options.loginInfo.passwd.placeholder'),
-            value: vnode.state.password,
-            oninput(e: InputEvent) {
-              vnode.state.password = (e.target as HTMLInputElement).value;
-            }
+            placeholder: t('page.loginInfo.passwd.placeholder'),
+            ..._v(vnode.state, 'password'),
           })
         ]),
+
+        m('h2.content-subhead', t('page.loginInfo.section.table')),
         m(MatrixInfo, {
           rows: vnode.state.matrixCodes ?? [],
           oninput(i, v) {
             vnode.state.matrixCodes[i] = v;
           }
         }),
-        
       ]),
-      
-      m('div.separator'),
         
       
       m('div.btn-group[align=center]', [
@@ -172,28 +170,27 @@ export const LoginInfoPanel: C<object, _S> = {
           },
         }),
         m(Button, {
-          text: t('page.options.btn.delete'), click() {
+          text: t('page.options.btn.delete'), async click() {
             const [, , payload] = checkAndFormInfo('', '', []);
-            setLoginInfo(payload).then(() => refresh(vnode));
+            await setLoginInfo(payload);
+            refresh(vnode);
           },
         }),
         m(Button, {
-          text: t('page.options.btn.input'), click() {
-            loadJson<Partial<LoginInfoScheme>>().then(async (ans) => {
-              await setLoginInfo({ ...getDefaultLoginInfo(), ...ans });
-              await refresh(vnode);
-            });
+          text: t('page.options.btn.input'), async click() {
+            const ans = await loadJson<Partial<LoginInfoScheme>>();
+            await setLoginInfo({ ...getDefaultLoginInfo(), ...ans });
+            await refresh(vnode);
           },
         }),
         m(Button, {
-          text: t('page.options.btn.output'), click() {
-            getLoginInfo().then((rawContent) => {
-              const content = JSON.stringify(rawContent);
-              const blob = new Blob([content], {
-                type: 'text/plain;charset=utf-8',
-              });
-              saveToFile(blob, 'account.json');
+          text: t('page.options.btn.output'), async click() {
+            const rawContent = await getLoginInfo();
+            const content = JSON.stringify(rawContent);
+            const blob = new Blob([content], {
+              type: 'text/plain;charset=utf-8',
             });
+            saveToFile(blob, 'account.json');
           },
         }),
       ]),

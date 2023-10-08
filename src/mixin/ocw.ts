@@ -1,5 +1,5 @@
 import { CourseInfoScheme, DayPeriodScheme, getOcwParsedData } from '@/data/course';
-import { Modal } from '@/view/modal';
+import { Modal } from '@/view';
 import m, { ComponentTypes as C } from 'mithril';
 
 import dayjs, { Dayjs } from 'dayjs';

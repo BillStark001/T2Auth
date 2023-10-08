@@ -2,7 +2,7 @@ import { OptionsScheme, StorageOptionsScheme, getDefaultOptions } from '@/data/m
 import m, { ComponentTypes as C } from 'mithril';
 import { getOptions, setOptions } from './sw';
 import { supportedLanguages, t } from '@/common/lang/i18n';
-import { Button } from '@/view/general';
+import { Button } from '@/view';
 import { VnodeObj, loadJson, saveToFile } from '@/common/utils';
 
 
@@ -29,7 +29,7 @@ export const OptionsPanel: C<object, _S> = {
 
       m('fieldset', [
         m('div.pure-control-group', [
-          m('label', t('page.options.loginInfo.username.key')),
+          m('label', t('page.loginInfo.username.key')),
           m('div.pure-g.pure-group', { style: { width: '150px', display: 'inline-block' } }, [
             m('input.pure-u-1', {
               type: 'time'
@@ -57,7 +57,7 @@ export const OptionsPanel: C<object, _S> = {
           ]),
 
           m('div.pure-control-group', [
-            m('label', t('page.options.loginInfo.username.key')),
+            m('label', t('page.loginInfo.username.key')),
             m('input', {
               type: 'date',
             })
