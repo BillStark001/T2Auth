@@ -15,7 +15,7 @@ import { t } from '@/common/lang/i18n';
 import style from './mixin.module.css';
 import { getOptions } from '@/page/sw';
 import { OptionsScheme, getDefaultOptions } from '@/data/model';
-import { CalendarGeneratorView } from './cal-gen';
+import { CalendarGeneratorView } from '../view/cal-gen';
 
 const OcwView: C<object, {
   modal: boolean,
@@ -33,7 +33,7 @@ const OcwView: C<object, {
   },
   view(vnode) {
     return m('div.t2auth-anchor', [
-      // m('link', { rel: 'stylesheet', href: chrome.runtime.getURL('/pure-min.css') }),
+      m('link', { rel: 'stylesheet', href: chrome.runtime.getURL('/pure-min.css') }),
       // m('link', { rel: 'stylesheet', href: chrome.runtime.getURL('/style.css') }),
       m('button.' + style['btn'], {
         onclick() { vnode.state.modal = true; }
@@ -45,7 +45,11 @@ const OcwView: C<object, {
         },
         header: t('mixin.ocw.calGen')
       }, [
-        vnode.state.data ? m(CalendarGeneratorView, { data: vnode.state.data, periodStart: vnode.state.options.periodStart }) : undefined,
+        vnode.state.data ? m(CalendarGeneratorView, { 
+          data: [vnode.state.data], 
+          periodStart: vnode.state.options.periodStart,
+          quarterInterval: vnode.state.options.quarterInterval,
+        }) : undefined,
       ])
     ]);
   },

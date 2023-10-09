@@ -33,10 +33,16 @@ export type EwsRawData = {
   };
 };
 
+type Parser = (elem: HTMLTableCellElement) => string;
+const parsers: { [key: string]: Parser } = {
+  ['授業科目名']: (e) =>  e.querySelector('a')?.innerText ?? '',
+  ['Course number']: (e) =>  e.querySelector('a')?.innerText ?? '',
+};
+
 export const getEwsRawData = (): EwsRawData => {
   const dataByCourse: Record<string, string>[] = [];
   document.querySelectorAll(SEL_E_TABLE_COURSE).forEach((t) => {
-    dataByCourse.push(...parseHtmlTableToObjects(t as HTMLTableElement));
+    dataByCourse.push(...parseHtmlTableToObjects(t as HTMLTableElement, undefined, parsers));
   });
 
   const calendarTables = [...document.querySelectorAll(SEL_E_TABLE_CAL)] as HTMLTableElement[];

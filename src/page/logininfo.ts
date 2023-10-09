@@ -1,7 +1,7 @@
 import { Button } from '@/view';
 import m, { ComponentTypes as C } from 'mithril';
 import { getAllInfo, setLoginInfo, getLoginInfo } from './sw';
-import { VnodeObj, loadJson, saveToFile } from '@/common/utils';
+import { VnodeObj, getBoundData, loadJson, saveToFile } from '@/common/utils';
 import { LoginInfoScheme, getDefaultLoginInfo } from '@/data/model';
 import { t } from '@/common/lang/i18n';
 
@@ -107,13 +107,6 @@ const refresh = async (vnode: VnodeObj<object, _S>) => {
   m.redraw();
 };
 
-const _v = <T>(state: T, key: keyof T) => ({
-  value: state[key],
-  oninput(e: InputEvent) {
-    state[key] = (e.target as HTMLInputElement).value as T[keyof T];
-  }
-});
-
 export const LoginInfoPanel: C<object, _S> = {
   async oninit(vnode) {
     refresh(vnode);
@@ -130,7 +123,7 @@ export const LoginInfoPanel: C<object, _S> = {
           type: 'text',
           maxlength: '255',
           placeholder: t('page.loginInfo.username.placeholder'),
-          ..._v(vnode.state, 'account'),
+          ...getBoundData(vnode.state, 'account'),
         }),
       ]),
       m('div.pure-control-group', [
@@ -139,7 +132,7 @@ export const LoginInfoPanel: C<object, _S> = {
           type: 'password',
           maxlength: '32',
           placeholder: t('page.loginInfo.passwd.placeholder'),
-          ..._v(vnode.state, 'password'),
+          ...getBoundData(vnode.state, 'password'),
         })
       ]),
         

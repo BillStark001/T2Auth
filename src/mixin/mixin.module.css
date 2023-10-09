@@ -1,24 +1,3 @@
-.cal-cell.normal {
-  background-color: white;
-}
-
-.cal-cell.disabled {
-  background-color: #e9e9e9;
-  color: #444;
-}
-
-.cal-cell.course {
-  background-color: #d8ebf7;
-}
-
-.cal-cell.course-p {
-  background-color: #e4f5fb;
-}
-
-.cal-cell.course-c {
-  background-color: #eff8ff;
-}
-
 .btn {
   border: 1px solid #a1a1a1;
   background-color: #eeeeee;

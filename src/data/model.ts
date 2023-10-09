@@ -52,7 +52,7 @@ export const encryptInfo = (scheme: LoginInfoScheme, k: string, i: string): Enco
 export type OptionsScheme = {
   directLogin: boolean,
   periodStart: [string, string][],
-  quarterInterval: { [quarter: string]: [number, number, number, number] }, // month, date, month, date
+  quarterInterval: { [ay: string]: [string, string][] }, // month, date, month, date
   lang: string,
 };
 
@@ -60,22 +60,48 @@ export type StorageOptionsScheme = OptionsScheme & {
   loginInfo: EncodedLoginInfoScheme,
 };
 
-export const getDefaultOptions = (): StorageOptionsScheme => ({
+export const getCurrentAcademicYear = () => {
+  const d = new Date();
+  let ay = d.getFullYear();
+  if (d.getMonth() < 3)
+    ay -= 1;
+  return ay;
+};
+
+export const getDefaultQuarterInterval = (ay?: number): [string, string][] => {
+  ay = ay ?? getCurrentAcademicYear();
+  const ayd = ay.toFixed(0).padStart(4, '0');
+  const ayp1 = (ay + 1).toFixed(0).padStart(4, '0');
+  return [
+    [`${ayd}-04-01`, `${ayp1}-04-01`],
+    [`${ayd}-04-01`, `${ayd}-06-01`],
+    [`${ayd}-06-01`, `${ayd}-08-01`],
+    [`${ayd}-10-01`, `${ayd}-12-01`],
+    [`${ayd}-12-01`, `${ayp1}-02-01`],
+  ];
+};
+
+export const getDefaultPeriodStart = () => [
+  ['00:00', '00:00'],
+  ['08:50', '09:40'],
+  ['09:40', '10:30'],
+  ['10:45', '11:35'],
+  ['11:35', '12:25'],
+  ['13:30', '14:20'],
+  ['14:20', '15:10'],
+  ['15:25', '16:15'],
+  ['16:15', '17:05'],
+  ['17:15', '18:05'],
+  ['18:50', '18:55']
+] as [string, string][];
+
+export const getDefaultOptions = (ay?: number): StorageOptionsScheme => ({
   loginInfo: getDefaultLoginInfo(),
   directLogin: false,
-  periodStart: [
-    ['00:00', '00:00'],
-    ['08:50', '09:40'],
-    ['09:40', '10:30'],
-    ['10:45', '11:35'],
-    ['11:35', '12:25'],
-    ['13:30', '14:20'],
-    ['14:20', '15:10'],
-    ['15:25', '16:15'],
-    ['16:15', '17:05'],
-    ['17:15', '18:05'],
-    ['18:50', '18:55']
-  ],
-  quarterInterval: {}, // TODO
+  periodStart: getDefaultPeriodStart(),
+  quarterInterval: (() => {
+    const _ay = ay ?? getCurrentAcademicYear();
+    return { [_ay]: getDefaultQuarterInterval(_ay) };
+  })(),
   lang: '',
 });

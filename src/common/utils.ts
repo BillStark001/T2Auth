@@ -41,29 +41,33 @@ export const range = (startOrEnd: number, end?: number, step: number = 1) => {
 
 // html
 
-export const parseHtmlTableToObjects = (table: HTMLTableElement, orig?: boolean) => {
+export const parseHtmlTableToObjects = (
+  table: HTMLTableElement, 
+  orig?: boolean, 
+  parsers?: { [key: string]: (elem: HTMLTableCellElement) => string },
+  headerParser?: (elem: HTMLTableCellElement) => string,
+) => {
   const columnNames: string[] = [];
   const tableData: Record<string, string>[] = [];
 
   const rows = table.getElementsByTagName('tr');
-  
-  // 提取第一行的列名
+
   const firstRow = rows[0];
   const cells = firstRow.getElementsByTagName('th');
   for (let i = 0; i < cells.length; i++) {
-    const nameRaw = cells[i].textContent || '';
+    const nameRaw = headerParser ? headerParser(cells[i]) : (cells[i].textContent || '');
     columnNames.push(orig ? nameRaw : nameRaw.replace(/\r?\n/g, '').trim());
   }
 
-  // 逐行解析数据
   for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
     const rowData: Record<string, string> = {};
     const row = rows[rowIndex];
     const cells = row.getElementsByTagName('td');
-    
+
     for (let colIndex = 0; colIndex < cells.length; colIndex++) {
       const columnName = columnNames[colIndex];
-      const cellValueRaw = cells[colIndex].textContent || '';
+      const parser = parsers?.[columnName];
+      const cellValueRaw = parser ? parser(cells[colIndex]) : (cells[colIndex].textContent || '');
       const cellValue = orig ? cellValueRaw : cellValueRaw.replace(/\r?\n/g, '').trim();
       rowData[columnName] = cellValue;
     }
@@ -78,11 +82,32 @@ export const querySelectors = <T extends Element>(target: Document, selectors: s
   let ans = null;
   for (const s of selectors) {
     ans = target.querySelector<T>(s);
-    if (ans) 
+    if (ans)
       break;
   }
   return ans;
 };
+
+const timeRegex = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/;
+export const parseTimeInput = (inputValue: string): [number, number, number | undefined] | undefined => {
+
+  timeRegex.lastIndex = 0;
+  const match = timeRegex.exec(inputValue);
+
+  if (match) {
+    const hours = parseInt(match[1], 10);
+    const minutes = parseInt(match[2], 10);
+    const seconds = match[3] ? parseInt(match[3], 10) : undefined;
+
+    if (hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59 && (!seconds || (seconds >= 0 && seconds <= 59))) {
+      return [hours, minutes, seconds];
+    }
+  }
+
+  return undefined;
+};
+
+// io
 
 export const saveToFile = (blob: Blob | MediaSource, name: string) => {
   const url = window.URL.createObjectURL(blob);
@@ -116,25 +141,23 @@ export const loadJson = <T>() => new Promise<T>((res, rej) => {
   inp.click();
 });
 
-const timeRegex = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/;
-export const parseTimeInput = (inputValue: string): [number, number, number | undefined] | undefined => {
+// mithril
 
-  timeRegex.lastIndex = 0;
-  const match = timeRegex.exec(inputValue);
-
-  if (match) {
-    const hours = parseInt(match[1], 10);
-    const minutes = parseInt(match[2], 10);
-    const seconds = match[3] ? parseInt(match[3], 10) : undefined;
-
-    if (hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59 && (!seconds || (seconds >= 0 && seconds <= 59))) {
-      return [hours, minutes, seconds];
+export const getBoundData = <T>(
+  state: T, key: keyof T, 
+  checked?: boolean, 
+  onchange?: boolean,
+) => {
+  const targetKey = checked ? 'checked' : 'value';
+  return {
+    [targetKey]: state[key],
+    [onchange ? 'onchange' : 'oninput']: function (e: InputEvent) {
+      state[key] = (e.target as HTMLInputElement)[targetKey] as T[keyof T];
     }
-  }
-
-  return undefined;
+  };
 };
 
+// crypt
 
 export function getFingerPrint(key: string, iv: string) {
   return md5(key + iv, 32);

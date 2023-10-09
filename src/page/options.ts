@@ -3,7 +3,7 @@ import m, { ComponentTypes as C } from 'mithril';
 import { getOptions, setOptions } from './sw';
 import { supportedLanguages, t } from '@/common/lang/i18n';
 import { Button, autoSetLanguage } from '@/view';
-import { VnodeObj, loadJson, range, saveToFile } from '@/common/utils';
+import { VnodeObj, getBoundData, loadJson, range, saveToFile } from '@/common/utils';
 
 
 type _S = {
@@ -16,14 +16,6 @@ const refresh = async (vnode: VnodeObj<object, _S>) => {
   await autoSetLanguage();
   m.redraw();
 };
-
-
-const _v = <T>(state: T, key: keyof T, checked?: boolean) => ({
-  [checked ? 'checked' : 'value']: state[key],
-  oninput(e: InputEvent) {
-    state[key] = (e.target as HTMLInputElement)[checked ? 'checked' : 'value'] as T[keyof T];
-  }
-});
 
 const periods = range(1, 11);
 
@@ -42,26 +34,26 @@ export const OptionsPanel: C<object, _S> = {
       m('div.pure-control-group', [
         m('label', t('page.options.lang.key')),
         m('select', 
-          _v(options, 'lang'),
+          getBoundData(options, 'lang'),
           m('option', { value: '' }, t('page.options.lang.value.__null__')),
           supportedLanguages.map(l => m('option', { value: l }, t('page.options.lang.value.' + l))))
       ]),
       m('div.pure-control-group', [
         m('label', t('page.options.directLogin.key')),
         m('span', [
-          m('input[type=checkbox][name=direct-login]', _v(options, 'directLogin', true)),
+          m('input[type=checkbox][name=direct-login]', getBoundData(options, 'directLogin', true)),
           m('label[for=direct-login]', { style: { width: 'max-content', 'margin-left': '5px' }, }, t('page.options.directLogin.value'))
         ])
       ]),
 
       
       m('h2.content-subhead', t('page.options.section.period')),
-      m('fieldset', periods.map((p) => m('dov.pure-control-group', [
+      m('fieldset', periods.map((p) => m('div.pure-control-group', [
         m('label', t('page.options.period.sub', { period: p })),
         m('span', [
-          m('input[type=time]', _v(options.periodStart[p], 0)),
+          m('input[type=time]', getBoundData(options.periodStart[p], 0)),
           '-',
-          m('input[type=time]', _v(options.periodStart[p], 1)),
+          m('input[type=time]', getBoundData(options.periodStart[p], 1)),
         ])
       ]))),
       

@@ -8,6 +8,7 @@ import m, { ComponentTypes as C } from 'mithril';
 // @ts-ignore
 import style from './mixin.module.css';
 import { t } from '@/common/lang/i18n';
+import { CalendarGeneratorView } from '@/view/cal-gen';
 
 
 const EwsView: C<object, {
@@ -27,7 +28,7 @@ const EwsView: C<object, {
   },
   view(vnode) {
     return m('div.t2auth-anchor', [
-      // m('link', { rel: 'stylesheet', href: chrome.runtime.getURL('/pure-min.css') }),
+      m('link', { rel: 'stylesheet', href: chrome.runtime.getURL('/pure-min.css') }),
       // m('link', { rel: 'stylesheet', href: chrome.runtime.getURL('/style.css') }),
       m('button.' + style['btn'], {
         onclick(e: Event) { 
@@ -42,7 +43,11 @@ const EwsView: C<object, {
         },
         header: t('mixin.ocw.calGen')
       }, [
-        '12345'
+        vnode.state.data ? m(CalendarGeneratorView, { 
+          data: vnode.state.data, 
+          periodStart: vnode.state.options.periodStart,
+          quarterInterval: vnode.state.options.quarterInterval,
+        }) : undefined,
       ])
     ]);
   },

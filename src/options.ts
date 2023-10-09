@@ -1,5 +1,5 @@
 import m, { ComponentTypes as C } from 'mithril';
-import { Footer, Header, Layout, MenuItem } from './view/layout';
+import { Layout, MenuItem } from './view/layout';
 import { LoginInfoPanel } from './page/logininfo';
 import { OptionsPanel } from './page/options';
 import { t } from './common/lang/i18n';
@@ -34,14 +34,6 @@ const PageView: C<object, _S> = {
       page === 'loginInfo' && m(LoginInfoPanel),
     ].filter(x => !!x));
 
-    return m('div', [
-      m(Header, { subtitle: 'Options Page' }),
-      m('div.std-border.pure-g.page-frame', [
-        m('div.pure-u-1.page-item-1-2', m(LoginInfoPanel)),
-        m('div.pure-u-1.page-item-1-2', m(OptionsPanel)),
-      ]),
-      m(Footer),
-    ]);
   },
 };
 
