@@ -27,6 +27,7 @@ export const langRes: LanguageResource = {
         [6]: ['Sat', '土', '六']
       }
     },
+    ay: ['AY {{ay}}', '{{ay}} 年度', '{{ay}} 年度'],
     quarter: {
       [1]: '1Q',
       [2]: '2Q',
@@ -35,8 +36,19 @@ export const langRes: LanguageResource = {
       [5]: ['1st Semester', '前学期', '第一学期'],
       [6]: ['2nd Semester', '後学期', '第二学期'],
     },
+    period: ['P{{period}}', '{{period}} 限目', '第 {{period}} 节'],
     date: {
       md: ['MMM D', 'M月D日', 'M月D日'],
+    },
+  },
+  view: {
+    calGen: {
+      section: {
+        content: ['Course Content', '講義内容', '课程内容'],
+        settings: ['Settings', '設定', '选项'],
+      },
+      quarter: ['Quarter/Semester', 'クォーター・学期', '半学期 (Q)・学期'],
+      interval: ['Interval', '期間', '学期区间'],
     }
   },
   mixin: {
@@ -116,9 +128,6 @@ export const langRes: LanguageResource = {
           zh: ['Simplified Chinese', '簡体中国語', '简体中文'],
           '__null__': ['Default', 'システムに従う', '跟随系统'],
         }
-      },
-      period: {
-        sub: ['P{{period}}', '{{period}} 限目', '第 {{period}} 节'],
       },
     },
     loginInfo: {

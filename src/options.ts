@@ -1,6 +1,6 @@
 import m, { ComponentTypes as C } from 'mithril';
 import { Layout, MenuItem } from './view/layout';
-import { LoginInfoPanel } from './page/logininfo';
+import { LoginInfoPanel } from './page/login-info';
 import { OptionsPanel } from './page/options';
 import { t } from './common/lang/i18n';
 import { autoSetLanguage } from './view';

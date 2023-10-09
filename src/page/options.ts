@@ -49,10 +49,10 @@ export const OptionsPanel: C<object, _S> = {
       
       m('h2.content-subhead', t('page.options.section.period')),
       m('fieldset', periods.map((p) => m('div.pure-control-group', [
-        m('label', t('page.options.period.sub', { period: p })),
+        m('label', t('meta.period', { period: p })),
         m('span', [
           m('input[type=time]', getBoundData(options.periodStart[p], 0)),
-          '-',
+          ' - ',
           m('input[type=time]', getBoundData(options.periodStart[p], 1)),
         ])
       ]))),
@@ -96,9 +96,8 @@ export const OptionsPanel: C<object, _S> = {
         m(Button, {
           text: t('page.options.btn.output'), async click(e: Event) {
             e.preventDefault();
-            const rawContent = getOptions();
+            const rawContent = await getOptions();
             const content = JSON.stringify(rawContent);
-            console.log(content);
             const blob = new Blob([content], {
               type: 'text/plain;charset=utf-8',
             });

@@ -30,18 +30,18 @@ const checkAndFormInfo = (acc: string, pwd: string, codes: string[]): [
   let mat = '';
   for (let i = 0; i < MATRIX_ROWS; ++i) {
     let vt1 = true;
-    const tmat = legalizeMatrixRow(codes[i]);
-    if (tmat.indexOf('0') >= 0) {
+    const curRow = legalizeMatrixRow(codes[i]);
+    if (curRow.indexOf('0') >= 0) {
       vt1 = false;
     } else {
       for (let j = 0; j < MATRIX_COLS; ++j)
         if (
-          tmat.charCodeAt(j) > 'Z'.charCodeAt(0) ||
-          tmat.charCodeAt(j) < 'A'.charCodeAt(0)
+          curRow.charCodeAt(j) > 'Z'.charCodeAt(0) ||
+          curRow.charCodeAt(j) < 'A'.charCodeAt(0)
         )
           vt1 = false;
     }
-    mat = mat + tmat;
+    mat = mat + curRow;
     if (vt1 != true) {
       vt = false;
       alerts.push(t('page.loginInfo.alert.invalidMat', { line: i + 1 }));

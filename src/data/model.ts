@@ -81,6 +81,18 @@ export const getDefaultQuarterInterval = (ay?: number): [string, string][] => {
   ];
 };
 
+export const getChangedQuarterInterval = (
+  data: [string, string][], 
+  q: number, 
+  i: string, 
+  start: boolean) => {
+  const ret = data.map(x => [...x] as [string, string]);
+  if (q > 4)
+    q = (q - 4) * 2 + (start ? -1 : 0);
+  ret[q][start ? 0 : 1] = i;
+  return ret;
+};
+
 export const getDefaultPeriodStart = () => [
   ['00:00', '00:00'],
   ['08:50', '09:40'],
@@ -95,13 +107,15 @@ export const getDefaultPeriodStart = () => [
   ['18:50', '18:55']
 ] as [string, string][];
 
-export const getDefaultOptions = (ay?: number): StorageOptionsScheme => ({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const getDefaultOptions = (): StorageOptionsScheme => ({
   loginInfo: getDefaultLoginInfo(),
   directLogin: false,
   periodStart: getDefaultPeriodStart(),
-  quarterInterval: (() => {
-    const _ay = ay ?? getCurrentAcademicYear();
-    return { [_ay]: getDefaultQuarterInterval(_ay) };
-  })(),
+  // quarterInterval: (() => {
+  //   const _ay = ay ?? getCurrentAcademicYear();
+  //   return { [_ay]: getDefaultQuarterInterval(_ay) };
+  // })(),
+  quarterInterval: {}, 
   lang: '',
 });

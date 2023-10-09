@@ -1,11 +1,8 @@
 
 import { tryConnect } from './common/message';
-import { mountOnEwsPage } from './mixin/ews';
 import { proceedLogin } from './mixin/login';
-import { mountOnOcwPage } from './mixin/ocw';
+import { mountOnOcwPage, mountOnEwsPage } from './mixin/cal-gen';
 import { autoSetLanguage } from './view';
-
-// console.log('Thanks for using the Authentication Kit.');
 
 const main = async () => {
   await tryConnect();

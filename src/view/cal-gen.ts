@@ -7,7 +7,7 @@ import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-import { VnodeObj, range, saveToFile } from '@/common/utils';
+import { VnodeObj, range, saveToFile, truncateString } from '@/common/utils';
 import { Calendar } from '@/view/calendar';
 import { t } from '@/common/lang/i18n';
 
@@ -24,9 +24,9 @@ const durationMap: [number, number][] = [
 
 const quarterContains = (x: number, y: number) => {
   if (x === 5)
-    return y === 1 || y === 2;
+    return y === 1 || y === 2 || y === 5;
   if (x === 6)
-    return y === 3 || y === 4;
+    return y === 3 || y === 4 || y === 6;
   return x === y;
 };
 
@@ -44,11 +44,13 @@ const CalendarCellView: C<_A_C> = {
     return m('div', [
       m('div', String(date.date())),
       inSemester && periods ? m('div', periods.map(
-        ([code, { periodStart, periodEnd, location }, i, name]) => {
+        ([code, { periodStart, periodEnd }, i, name]) => {
           const jumped = jump[code][i];
           return m('div', [
-            m(jumped ? 'del' : 'span', `${code} ${name}`),
-            m(jumped ? 'del' : 'span', `P${periodStart}-${periodEnd}, ${location}`),
+            m(jumped ? 'del' : 'span', 
+              t('meta.period', { period: `${periodStart}-${periodEnd}` }) + ' ' + 
+              truncateString(name),
+            ),
             m('button.' + style['btn'], {
               onclick: (e: Event) => {
                 e.preventDefault();
@@ -83,13 +85,37 @@ const refreshQuarter = async (vnode: VnodeObj<CalendarGeneratorAttrs, _S>, ay: n
   Object.assign(vnode.state, {
     ay,
     quarter,
-    jump: Object.fromEntries(vnode.attrs.data.map(
-      (d) => [d.code, range(d.periods.length).map(() => new Map())]
-    )),
   } as _S);
 };
 
-const _d = (s: string) => dayjs(new Date(s)).tz('Asia/Tokyo');
+const getQuarterInterval = (qi: OptionsScheme['quarterInterval'], ay: number, quarter: number): [string, string] => {
+  const curInterval = qi[ay] ?? getDefaultQuarterInterval(ay);
+  const [ivStart, ivEnd] = quarter > 4 ?
+    [curInterval[(quarter - 4) * 2 - 1][0], curInterval[(quarter - 4) * 2][1]] :
+    curInterval[quarter];
+  return [ivStart, ivEnd];
+};
+
+const getQuarterIntervalByCourse = (
+  qi: OptionsScheme['quarterInterval'], 
+  dispAy: number,
+  dispQuarter: number, 
+  course: CourseInfoScheme) => {
+  const ans: [Dayjs, Dayjs][] = [];
+  for (const q of course.quarters) {
+    if (dispAy != course.ay || (q <= 4 && !quarterContains(dispQuarter, q)))
+      continue;
+    const [ivStart, ivEnd] = getQuarterInterval(qi, course.ay, q);
+    ans.push([
+      _d(ivStart),
+      _d(ivEnd),
+    ]);
+  }
+  
+  return ans;
+};
+
+const _d = (s: string) => dayjs(new Date(s).setHours(0)).tz('Asia/Tokyo');
 
 export const CalendarGeneratorView: C<CalendarGeneratorAttrs, _S> = {
 
@@ -112,6 +138,9 @@ export const CalendarGeneratorView: C<CalendarGeneratorAttrs, _S> = {
     vnode.state.quarterList = quarterList;
 
     // set init values
+    vnode.state.jump = Object.fromEntries(vnode.attrs.data.map(
+      (d) => [d.code, range(d.periods.length).map(() => new Map())]
+    ));
     const [ay, quarter] = quarterList[0];
     refreshQuarter(vnode, ay, quarter);
   },
@@ -130,12 +159,10 @@ export const CalendarGeneratorView: C<CalendarGeneratorAttrs, _S> = {
     const ey = meRaw > 12 ? ay + 1 : ay;
     const me = meRaw % 12;
     const durStart = `${ay.toFixed(0).padStart(4, '0')}-${(ms + 1).toFixed(0).padStart(2, '0')}-01`;
-    const durEnd = `${ey.toFixed(0).padStart(4, '0')}-${(me + 1).toFixed(0).padStart(2, '0')}-05`;
+    const durEnd = `${ey.toFixed(0).padStart(4, '0')}-${(me + 1).toFixed(0).padStart(2, '0')}-10`;
 
     const curInterval = quarterInterval[ay] ?? getDefaultQuarterInterval(ay);
-    const [ivStart, ivEnd] = quarter > 4 ?
-      [curInterval[(quarter - 4) * 2 - 1][0], curInterval[(quarter - 4) * 2][1]] :
-      curInterval[quarter];
+    const [ivStart, ivEnd] = getQuarterInterval(quarterInterval, ay, quarter);
 
     // convert date to dayjs
     const startRange = _d(durStart);
@@ -156,6 +183,20 @@ export const CalendarGeneratorView: C<CalendarGeneratorAttrs, _S> = {
       }
     }
 
+    const _i = (value: string, ay: number, quarter: number, start: boolean) => m('input[type=date]', {
+      value,
+      min: durStart,
+      max: durEnd,
+      oninput: onQuarterIntervalChange ?
+        (e: InputEvent) => onQuarterIntervalChange(
+          ay, quarter, (e.target as HTMLInputElement).value, start) : undefined,
+    });
+
+    const quarter1 = quarter <= 4 ? quarter : ((quarter - 4) * 2 - 1);
+    const quarter2 = quarter <= 4 ? undefined : ((quarter - 4) * 2);
+    const [ivStart1, ivEnd1] = quarter <= 4 ? ['', ''] : curInterval[quarter1];
+    const [ivStart2, ivEnd2] = quarter <= 4 ? ['', ''] : curInterval[quarter2!];
+
     // generate view
     return m('form.pure-form.pure-form-aligned', [
 
@@ -163,7 +204,7 @@ export const CalendarGeneratorView: C<CalendarGeneratorAttrs, _S> = {
       m('fieldset', [
         // quarter selector
         m('div.pure-control-group', [
-          m('label', t('view.calGen.quarter.key')),
+          m('label', t('view.calGen.quarter')),
           m('select', {
             value: JSON.stringify([ay, quarter]),
             onchange: (e: Event) => {
@@ -180,29 +221,37 @@ export const CalendarGeneratorView: C<CalendarGeneratorAttrs, _S> = {
           )))
         ]),
         // interval setter
-        m('div.pure-control-group', [
-          m('label', t('view.calGen.interval.key')),
+        quarter2 != undefined ? undefined : m('div.pure-control-group', [
+          m('label', t('view.calGen.interval')),
           m('span', [
-            m('input[type=date]', {
-              value: ivStart,
-              min: durStart,
-              max: durEnd,
-              oninput: onQuarterIntervalChange ?
-                (e: InputEvent) => onQuarterIntervalChange(
-                  ay, quarter, (e.target as HTMLInputElement).value, true) : undefined,
-            }),
+            _i(ivStart, ay, quarter, true),
             '-',
-            m('input[type=date]', {
-              value: ivEnd,
-              min: durStart,
-              max: durEnd,
-              oninput: onQuarterIntervalChange ?
-                (e: InputEvent) => onQuarterIntervalChange(
-                  ay, quarter, (e.target as HTMLInputElement).value, false) : undefined,
-            }),
+            _i(ivEnd, ay, quarter, false),
           ])
         ])
       ]),
+
+      // interval setter for semester
+      quarter2 == undefined ? undefined : m('h2.content-subhead', t('view.calGen.interval')),
+      quarter2 == undefined ? undefined : m('fieldset', [
+        m('div.pure-control-group', [
+          m('label', t(`meta.quarter.${quarter1}`)),
+          m('span', [
+            _i(ivStart1, ay, quarter1, true),
+            ' - ',
+            _i(ivEnd1, ay, quarter1, false),
+          ])
+        ]),
+        m('div.pure-control-group', [
+          m('label', t(`meta.quarter.${quarter2}`)),
+          m('span', [
+            _i(ivStart2, ay, quarter2, true),
+            ' - ',
+            _i(ivEnd2, ay, quarter2, false),
+          ])
+        ])
+      ]),
+      
 
       m('h2.content-subhead', t('view.calGen.section.content')),
 
@@ -261,8 +310,7 @@ export const CalendarGeneratorView: C<CalendarGeneratorAttrs, _S> = {
               const ayCourse = ayRaw < 0 ? curAy : ayRaw;
               return (ayCourse == ay && quarters.filter((q) => quarterContains(quarter, q)).length > 0);
             }),
-            startDate,
-            endDate,
+            (c) => getQuarterIntervalByCourse(quarterInterval, ay, quarter, c),
             Object.fromEntries(Object.entries(jump).map(
               ([c, n]) => [c, n.map(
                 (m) => [...m.keys()].filter(k => !!m.get(k)).map(x => dayjs(x))

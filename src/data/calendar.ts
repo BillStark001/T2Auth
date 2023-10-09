@@ -41,25 +41,27 @@ export const generateCourseEvents = (
 
     ans.push(event);
   }
-  console.log(ans);
   return ans;
 };
 
 export const generateCalendarFile = (
   data: CourseInfoScheme[],
-  startDate: Dayjs,
-  endDate: Dayjs,
+  dateGetter: (course: CourseInfoScheme) => [Dayjs, Dayjs][],
   jump: Record<string, Dayjs[][]>, // [index]: date[]
   periodStart: [string, string][],
 ) => {
 
-  const jcal = new ICAL.Component('vcalendar');
+  const calendar = new ICAL.Component('vcalendar');
   
   for (const info of data) {
-    generateCourseEvents(info, startDate, endDate, jump[info.code] ?? [], periodStart)
-      .forEach((c) => jcal.addSubcomponent(c));
+    const dates = dateGetter(info);
+    for (const [startDate, endDate] of dates) {
+      generateCourseEvents(info, startDate, endDate, jump[info.code] ?? [], periodStart)
+        .forEach((c) => calendar.addSubcomponent(c));
+    }
   }
 
-  const text = jcal.toString();
+  const text = calendar.toString();
+  console.log(text);
   return text;
 };
