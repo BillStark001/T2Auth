@@ -61,16 +61,9 @@ export const langRes: LanguageResource = {
     },
     ocw: {
       cal: {
-        start: ['Start→', '学期開始→', '学期开始→'],
-        end: ['End→', '学期終了→', '学期结束→'],
-        jump: ['Cancel', '飛ばす', '跳过本次'],
+        jump: ['Jump', '飛ばす', '跳过'],
         noJump: ['Restore', '戻す', '恢复'],
 
-        title: [
-          'Calendar of AY {{year}}, {{quarter}}',
-          '{{year}}年度 {{quarter}}',
-          '{{year}}年度 {{quarter}}',
-        ],
         weekIndex: [
           'Week {{index}}',
           '第{{index}}週',
@@ -84,11 +77,18 @@ export const langRes: LanguageResource = {
         ]
 
       },
-      calGen: [
-        'Generate iCalendar File',
-        'iCalendarファイルを生成',
-        '生成iCalendar日程文件',
-      ]
+      calGen: {
+        title: [
+          'Generate iCalendar File',
+          'iCalendarファイルを生成',
+          '生成iCalendar日程文件',
+        ],
+        trigger: [
+          'Generate Calendar',
+          '日程ファイルを生成',
+          '生成日程文件',
+        ]
+      },
 
     }
   },

@@ -1,4 +1,5 @@
 import { EwsRawData, getEwsRawData, getOcwRawData } from './html-parser';
+import { getCurrentAcademicYear } from './model';
 
 const reDayPeriod = /(月|火|水|木|金|土|日|Mon|Tue|Wed|Thu|Thur|Thr|Fri|Sat|Sun)(\d{1,2})(?:-(\d{1,2}))?/g;
 
@@ -152,6 +153,8 @@ export const getEwsParsedData = (raw?: EwsRawData): [CourseInfoScheme[], Record<
   const { dataByCalendar, dataByCourse, timeTable } = raw ?? getEwsRawData();
   const parsedData: CourseInfoScheme[] = [];
 
+  const ay = getCurrentAcademicYear();
+
   // table data
   for (const raw of dataByCourse) {
     parsedData.push({
@@ -159,7 +162,7 @@ export const getEwsParsedData = (raw?: EwsRawData): [CourseInfoScheme[], Record<
       code: raw['科目コード'] ?? raw['Course number'] ?? '',
       titleJa: raw['授業科目名'] ?? '',
       titleEn: raw['Course Title'] ?? '',
-      ay: -1,
+      ay,
       quarters: parseAcademicQuarter(raw['Q'] ?? ''),
       periods: parseDayPeriod(raw['曜日・時限'] ?? raw['Class Days/Periods'] ?? ''),
     });
@@ -222,7 +225,7 @@ export const getEwsParsedData = (raw?: EwsRawData): [CourseInfoScheme[], Record<
       code, 
       titleEn: raw['ttKamokuName'],
       titleJa: raw['ttKamokuName'],
-      ay: -2,
+      ay,
       periods: parseDayPeriod([...locationMap[code]].join(' ')),
       quarters: [...quarterMap[code]]
         .map(x => parseAcademicQuarter(x))

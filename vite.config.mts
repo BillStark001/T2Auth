@@ -13,10 +13,9 @@ const manifest = defineManifest({
     'identity.email'
   ], 
   icons: {
-    '16': 'icon16.png',
-    '48': 'icon48.png',
+    '32': 'icon32.png',
+    '64': 'icon64.png',
     '128': 'icon128.png',
-    '256': 'icon256.png',
   },
   background: {
     service_worker: 'src/background.ts'

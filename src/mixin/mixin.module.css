@@ -2,8 +2,8 @@
   border: 1px solid #a1a1a1;
   background-color: #eeeeee;
   border-radius: 3px;
-  padding: 2px;
-  margin: 1px;
+  padding: 1px 3px;
+  margin: 2px;
 }
 
 .btn:hover {

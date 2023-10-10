@@ -25,3 +25,25 @@
 .cal-cell.course-c {
   background-color: #eff8ff;
 }
+
+.btn-gen {
+  margin: 10px 0 0 0;
+}
+
+.content-subhead {
+  display: block;
+  font-size: 1.5em;
+  margin-block-start: 0.5em;
+  margin-block-end: 0.5em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  font-weight: normal;
+  text-align: left;
+}
+
+.btn {
+  margin: 1px;
+  padding: 0 2px;
+  border: 1px solid #9d9d9d;
+  border-radius: 3px;
+}

@@ -2,7 +2,7 @@
 table.calendar {
   width: 100%;
   border-collapse: collapse;
-  border-radius: 10px;
+  border-radius: 15px;
   border-style: hidden;
   box-shadow: 0 0 0 1px #666; /* this draws the table border  */ 
 }

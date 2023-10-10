@@ -33,7 +33,7 @@ const quarterContains = (x: number, y: number) => {
 type _A_C = {
   date: Dayjs,
   inSemester: boolean,
-  periods: [string, DayPeriodScheme, number, string][],
+  periods: PeriodsCache,
   jump: Record<string, boolean[]>,
   onJumpChange: (code: string, index: number, value: boolean) => void,
 };
@@ -44,12 +44,12 @@ const CalendarCellView: C<_A_C> = {
     return m('div', [
       m('div', String(date.date())),
       inSemester && periods ? m('div', periods.map(
-        ([code, { periodStart, periodEnd }, i, name]) => {
+        ([{ code }, { periodStart, periodEnd }, i, name]) => {
           const jumped = jump[code][i];
           return m('div', [
             m(jumped ? 'del' : 'span', 
               t('meta.period', { period: `${periodStart}-${periodEnd}` }) + ' ' + 
-              truncateString(name),
+              truncateString(name, 12),
             ),
             m('button.' + style['btn'], {
               onclick: (e: Event) => {
@@ -117,15 +117,16 @@ const getQuarterIntervalByCourse = (
 
 const _d = (s: string) => dayjs(new Date(s).setHours(0)).tz('Asia/Tokyo');
 
+type PeriodsCache = [CourseInfoScheme, DayPeriodScheme, number, string][];
+
 export const CalendarGeneratorView: C<CalendarGeneratorAttrs, _S> = {
 
   oninit(vnode) {
-    const curAy = getCurrentAcademicYear();
 
     const quarterRecord: Set<string> = new Set();
     vnode.attrs.data.forEach(
       (d) => d.quarters.forEach(
-        (q) => quarterRecord.add(JSON.stringify([d.ay < 0 ? curAy : d.ay, q]))
+        (q) => quarterRecord.add(JSON.stringify([d.ay, q]))
       )
     );
 
@@ -150,8 +151,7 @@ export const CalendarGeneratorView: C<CalendarGeneratorAttrs, _S> = {
     const curAy = getCurrentAcademicYear();
 
     const { data, periodStart, quarterInterval, onQuarterIntervalChange } = vnode.attrs;
-    const { quarterList, ay: ayRaw, quarter, jump } = vnode.state;
-    const ay = ayRaw < 0 ? curAy : ayRaw;
+    const { quarterList, ay, quarter, jump } = vnode.state;
 
     // interval setter
     const [ms, dm] = durationMap[quarter];
@@ -172,14 +172,14 @@ export const CalendarGeneratorView: C<CalendarGeneratorAttrs, _S> = {
 
     // calculate periods
     const _range7 = range(7);
-    const periodsByDate: [string, DayPeriodScheme, number, string][][] = _range7.map(() => []);
-    for (const { code, ay: ayRaw, quarters, periods, titleJa, titleEn } of data) {
-      const ayCourse = ayRaw < 0 ? curAy : ayRaw;
+    const periodsByDate: PeriodsCache[] = _range7.map(() => []);
+    for (const info of data) {
+      const { ay: ayCourse, quarters, periods, titleJa, titleEn } = info;
       if (ayCourse != ay || quarters.filter((q) => quarterContains(quarter, q)).length == 0)
         continue;
       for (let i = 0; i < periods.length; ++i) {
         const period = periods[i];
-        periodsByDate[period.day].push([code, period, i, titleJa || titleEn]);
+        periodsByDate[period.day].push([info, period, i, titleJa || titleEn]);
       }
     }
 
@@ -192,15 +192,38 @@ export const CalendarGeneratorView: C<CalendarGeneratorAttrs, _S> = {
           ay, quarter, (e.target as HTMLInputElement).value, start) : undefined,
     });
 
+    // handle special cases when the user chooses 2 quarters
     const quarter1 = quarter <= 4 ? quarter : ((quarter - 4) * 2 - 1);
     const quarter2 = quarter <= 4 ? undefined : ((quarter - 4) * 2);
-    const [ivStart1, ivEnd1] = quarter <= 4 ? ['', ''] : curInterval[quarter1];
-    const [ivStart2, ivEnd2] = quarter <= 4 ? ['', ''] : curInterval[quarter2!];
+    const [ivStart1, ivEnd1] = quarter <= 4 ? ['2001-01-01', '2001-01-01'] : curInterval[quarter1];
+    const [ivStart2, ivEnd2] = quarter <= 4 ? ['2001-01-01', '2001-01-01'] : curInterval[quarter2!];
+    const q1End = _d(ivEnd1).add(1, 'day');
+    const q2Start = _d(ivStart2).add(-1, 'day');
+    const l1: PeriodsCache[] = quarter <= 4 ? [] : periodsByDate.map(c => c.filter(
+      ([{ quarters }]) => quarters.filter((q) => q === quarter1).length > 0
+    ));
+    const l2: PeriodsCache[] = quarter <= 4 ? [] : periodsByDate.map(c => c.filter(
+      ([{ quarters }]) => quarters.filter((q) => q === quarter2).length > 0
+    ));
+    const l3: PeriodsCache[] = quarter <= 4 ? [] : periodsByDate.map(c => c.filter(
+      ([{ quarters }]) => quarters.filter((q) => q === quarter).length > 0
+    ));
+
+    const getCurrentPeriods: (d: Dayjs) => PeriodsCache = 
+      quarter <= 4 ? (d) => periodsByDate[d.day()] : (d) =>{
+        const dd = d.day();
+        const ret = [...l3[dd]];
+        if (d.isAfter(q2Start))
+          ret.push(...l2[dd]);
+        if (d.isBefore(q1End))
+          ret.push(...l1[dd]);
+        return ret;
+      };
 
     // generate view
     return m('form.pure-form.pure-form-aligned', [
 
-      m('h2.content-subhead', t('view.calGen.section.settings')),
+      m('h2.' + style['content-subhead'], t('view.calGen.section.settings')),
       m('fieldset', [
         // quarter selector
         m('div.pure-control-group', [
@@ -232,7 +255,7 @@ export const CalendarGeneratorView: C<CalendarGeneratorAttrs, _S> = {
       ]),
 
       // interval setter for semester
-      quarter2 == undefined ? undefined : m('h2.content-subhead', t('view.calGen.interval')),
+      quarter2 == undefined ? undefined : m('h2.' + style['content-subhead'], t('view.calGen.interval')),
       quarter2 == undefined ? undefined : m('fieldset', [
         m('div.pure-control-group', [
           m('label', t(`meta.quarter.${quarter1}`)),
@@ -253,7 +276,7 @@ export const CalendarGeneratorView: C<CalendarGeneratorAttrs, _S> = {
       ]),
       
 
-      m('h2.content-subhead', t('view.calGen.section.content')),
+      m('h2.' + style['content-subhead'], t('view.calGen.section.content')),
 
       m(Calendar, {
         start: startRange,
@@ -277,7 +300,7 @@ export const CalendarGeneratorView: C<CalendarGeneratorAttrs, _S> = {
           const afterStart = date.isAfter(startDate.add(-1, 'day'));
           const beforeEnd = date.isBefore(endDate.add(1, 'day'));
           const inSemester = afterStart && beforeEnd;
-          const curPeriods = periodsByDate[date.day()];
+          const curPeriods = getCurrentPeriods(date);
           const jumpedMap = Object.fromEntries(data.map(({ code }) => [code, jump[code].map(d => !!d.get(isoStr))]));
           const jumpedCount = Object.entries(jumpedMap)
             .reduce((i, [, v]) => i + v.filter(x => x).length, 0);
@@ -302,7 +325,7 @@ export const CalendarGeneratorView: C<CalendarGeneratorAttrs, _S> = {
         },
       }, []),
 
-      m('div', m('button.' + style['btn'], {
+      m('div', m('button.pure-button.' + style['btn-gen'], {
         onclick: (e: Event) => {
           e.preventDefault();
           const ics = generateCalendarFile(
@@ -323,7 +346,7 @@ export const CalendarGeneratorView: C<CalendarGeneratorAttrs, _S> = {
           });
           saveToFile(blob, `courses_${ay}_${quarter}.ics`);
         }
-      }, t('mixin.ocw.calGen'))),
+      }, t('mixin.ocw.calGen.title'))),
     ]);
   },
 };

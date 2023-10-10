@@ -32,6 +32,10 @@
   font-size: 20px;
 }
 
+.modal-header .close-button:hover {
+  opacity: 50%;
+}
+
 .modal-header {
   position: relative;
   margin: 0;

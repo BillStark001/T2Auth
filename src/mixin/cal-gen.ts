@@ -46,13 +46,13 @@ const CalGenView: C<_A, _S> = {
           e.preventDefault();
           vnode.state.modal = true; 
         }
-      }, t('mixin.ocw.calGen')),
+      }, t('mixin.ocw.calGen.trigger')),
       m(Modal, {
         isOpen: modal,
         onclose() {
           vnode.state.modal = false;
         },
-        header: t('mixin.ocw.calGen')
+        header: t('mixin.ocw.calGen.title')
       }, [
         vnode.attrs.data ? m(CalendarGeneratorView, { 
           data: vnode.attrs.data, 
