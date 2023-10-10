@@ -9,7 +9,7 @@ import { changeLanguage } from '@/common/lang/i18n';
 import style from './view.module.css';
 
 export type ModalAttrs = {
-  header?: undefined | string | (() => VnodeLike),
+  header?: undefined | VnodeLike | (() => VnodeLike),
   isOpen?: boolean,
   onclose: () => void | Promise<void>,
 };
@@ -23,7 +23,9 @@ export const Modal: C<ModalAttrs> = {
       m('div.' + style['modal-overlay'], 
         m('div.' + style['modal'], [
           m('div.' + style['modal-header'], [
-            header && typeof header === 'function' ? header() : m('h2', header),
+            header && typeof header === 'function' ? header() : (
+              typeof header === 'string' ? m('h2', header) : header
+            ),
             m('span.' + style['close-button'], { onclick: () => onclose() }, '×')
           ]),
           m('div.' + style['modal-body'], vnode.children),

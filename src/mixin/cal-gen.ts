@@ -52,7 +52,12 @@ const CalGenView: C<_A, _S> = {
         onclose() {
           vnode.state.modal = false;
         },
-        header: t('mixin.ocw.calGen.title')
+        header: m('h2', { style: {
+          border: 'none',
+          'background-image': 'none',
+          'padding-left': 0,
+          'font-weight': 'normal'
+        }}, t('mixin.ocw.calGen.title')),
       }, [
         vnode.attrs.data ? m(CalendarGeneratorView, { 
           data: vnode.attrs.data, 
