@@ -49,6 +49,9 @@ export const langRes: LanguageResource = {
       },
       quarter: ['Quarter/Semester', 'クォーター・学期', '半学期 (Q)・学期'],
       interval: ['Interval', '期間', '学期区间'],
+    },
+    layout: {
+      feedback: ['Feedback', 'お問い合わせ', '反馈']
     }
   },
   mixin: {

@@ -41,7 +41,22 @@ const manifest = defineManifest({
       all_frames: true,
       run_at: 'document_end',
     }
-  ]
+  ],
+  web_accessible_resources: [
+    {
+      matches: [
+        '*://*.gsic.titech.ac.jp/*',
+        '*://portal.titech.ac.jp/*',
+        '*://www.ocw.titech.ac.jp/*',
+        '*://ocw.titech.ac.jp/*',
+        '*://kyomu0.gakumu.titech.ac.jp/*',
+        '*://kyomu.gakumu.titech.ac.jp/*',
+      ],
+      resources: [
+        'pure-min.css',
+      ],
+    },
+  ],
 });
 
 export default defineConfig({

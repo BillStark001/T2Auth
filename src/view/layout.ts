@@ -23,7 +23,13 @@ export const Footer: C = {
         fontSize: '10px'
       }
     }, [
-      m('p', t('meta.app.footer', { author: t('meta.app.author') }))
+      m('p', 
+        t('meta.app.footer', { author: t('meta.app.author') }),
+        ' - ',
+        m('a', { 
+          href: 'https://docs.google.com/forms/d/e/1FAIpQLSfKnzDQuicjJ4OEf2V0AoUDt8Fionf_qbzSp-bJopzWeH7pQg/viewform?usp=sf_link'
+        }, t('view.layout.feedback')),
+      ),
     ]);
   }
 };
