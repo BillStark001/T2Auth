@@ -4,7 +4,7 @@ import path from 'path';
 
 const manifest = defineManifest({
   name: 'T2Auth', 
-  description: 'A tool to help students of Tokyo Institute of Technology to log in quicker.', 
+  description: 'A Chrome extension to ease the use and improve user experience of the IT facilities in Tokyo Institute of Technology.', 
   version: '1.15.0', 
   manifest_version: 3, 
   permissions: [
