@@ -9,7 +9,7 @@ dayjs.extend(timezone);
 
 import { VnodeObj, range, saveToFile, truncateString } from '@/common/utils';
 import { Calendar } from '@/view/calendar';
-import { t } from '@/common/lang/i18n';
+import { t } from '@/common/lang';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -344,7 +344,10 @@ export const CalendarGeneratorView: C<CalendarGeneratorAttrs, _S> = {
           const blob = new Blob([ics], {
             type: 'text/plain;charset=utf-8',
           });
-          saveToFile(blob, `courses_${ay}_${quarter}.ics`);
+          const fileName = vnode.attrs.data.length == 1 ? 
+            `course_${vnode.attrs.data[0].code.replace(/\./g, '_').trim()}.ics` :  
+            `courses_${ay}_${quarter}.ics`;
+          saveToFile(blob, fileName);
         }
       }, t('mixin.ocw.calGen.title'))),
     ]);

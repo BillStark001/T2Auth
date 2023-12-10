@@ -2,7 +2,7 @@ import m from 'mithril';
 import { ComponentTypes as C } from 'mithril';
 import dayjs, { Dayjs } from 'dayjs';
 import { VnodeLike, range } from '@/common/utils';
-import { t } from '@/common/lang/i18n';
+import { t } from '@/common/lang';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore

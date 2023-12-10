@@ -1,5 +1,5 @@
 
-import { t } from '@/common/lang/i18n';
+import { t } from '@/common/lang';
 import { VnodeLike } from '@/common/utils';
 import m, { ComponentTypes as C } from 'mithril';
 

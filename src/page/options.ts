@@ -1,7 +1,7 @@
 import { OptionsScheme, StorageOptionsScheme, getDefaultOptions } from '@/data/model';
 import m, { ComponentTypes as C } from 'mithril';
 import { getOptions, setOptions } from './sw';
-import { supportedLanguages, t } from '@/common/lang/i18n';
+import { supportedLanguages, t } from '@/common/lang';
 import { Button, autoSetLanguage } from '@/view';
 import { VnodeObj, getBoundData, loadJson, range, saveToFile } from '@/common/utils';
 

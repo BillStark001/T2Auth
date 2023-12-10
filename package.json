@@ -1,8 +1,9 @@
 {
   "name": "t2auth",
   "version": "1.0.0",
-  "description": "A Chrome extension to help the students and faculties in Tokyo Institute of Technology to log in the web system faster and smoother.",
+  "description": "A Chrome extension to help the students and faculty in Tokyo Institute of Technology to log in the web system faster and smoother.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite",
@@ -20,6 +21,7 @@
     "@types/node": "^20.8.2",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
     "@typescript-eslint/parser": "^6.7.4",
+    "axios": "^1.6.2",
     "eslint": "^8.50.0",
     "typescript": "^5.2.2",
     "vite": "^4.4.10"

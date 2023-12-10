@@ -2,7 +2,7 @@ import m, { ComponentTypes as C } from 'mithril';
 import { Layout, MenuItem } from './view/layout';
 import { LoginInfoPanel } from './page/login-info';
 import { OptionsPanel } from './page/options';
-import { t } from './common/lang/i18n';
+import { t } from './common/lang';
 import { autoSetLanguage } from './view';
 import { tryConnect } from './common/message';
 

@@ -2,7 +2,7 @@ import m, { ComponentTypes as C } from 'mithril';
 import { VnodeLike } from '@/common/utils';
 import Portal from 'mithril-portal';
 import { getLanguage } from '@/page/sw';
-import { changeLanguage } from '@/common/lang/i18n';
+import { changeLanguage } from '@/common/lang';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore

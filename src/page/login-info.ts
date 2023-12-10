@@ -3,7 +3,7 @@ import m, { ComponentTypes as C } from 'mithril';
 import { getAllInfo, setLoginInfo, getLoginInfo } from './sw';
 import { VnodeObj, getBoundData, loadJson, saveToFile } from '@/common/utils';
 import { LoginInfoScheme, getDefaultLoginInfo } from '@/data/model';
-import { t } from '@/common/lang/i18n';
+import { t } from '@/common/lang';
 
 const MATRIX_ROWS = 7;
 const MATRIX_COLS = 10;

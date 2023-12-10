@@ -1,4 +1,4 @@
-import { t } from '@/common/lang/i18n';
+import { t } from '@/common/lang';
 import { querySelectors } from '@/common/utils';
 import { getAllInfo } from '@/page/sw';
 

@@ -8,7 +8,7 @@ import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-import { t } from '@/common/lang/i18n';
+import { t } from '@/common/lang';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
