@@ -5,7 +5,7 @@ import path from 'path';
 const manifest = defineManifest({
   name: 'T2Auth', 
   description: 'A Chrome extension to ease the use and improve user experience of the IT facilities in Tokyo Institute of Technology.', 
-  version: '1.15.0', 
+  version: '1.15.1', 
   manifest_version: 3, 
   permissions: [
     'storage', 
@@ -21,8 +21,8 @@ const manifest = defineManifest({
     service_worker: 'src/background.ts'
   },
   action: {
-    default_title: 'Open Login Page',
-    // default_popup: "index.html",
+    default_title: 'T2Auth',
+    default_popup: 'index.html',
   },
   options_page: 'options.html',
   content_scripts: [

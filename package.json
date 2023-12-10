@@ -1,6 +1,6 @@
 {
   "name": "t2auth",
-  "version": "1.0.0",
+  "version": "1.15.1",
   "description": "A Chrome extension to help the students and faculty in Tokyo Institute of Technology to log in the web system faster and smoother.",
   "main": "index.js",
   "type": "module",
