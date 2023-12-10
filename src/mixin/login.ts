@@ -71,6 +71,10 @@ function procScreen2(username: string, passwd: string) {
   }
 }
 
+const reMatrixCodePos = /\[\s*([A-Z])\s*,\s*([0-9])\s*\]/g;
+const A_CHAR_CODE = 'A'.charCodeAt(0);
+const NUM_1_CHAR_CODE = '1'.charCodeAt(0);
+
 function procScreen3(table: string) {
   showInfo('Screen 3');
   const auth = formAuth as HTMLTableElement;
@@ -84,19 +88,26 @@ function procScreen3(table: string) {
       'Invalid matrix information. Please check options page.'
     );
   } else {
-    for (let i = 3; i < 6; ++i) {
-      const a0 = auth.rows[i].cells[0].textContent;
-      if (!a0) {
-        showAlert(`Failed to get matrix authentication at position ${i}.`);
-        continue;
-      }
-      const pos =
-        a0.charCodeAt(1) - 'A'.charCodeAt(0) +
-        (a0.charCodeAt(3) - '1'.charCodeAt(0)) * 10;
-      const a2 = auth.rows[i].cells[2];
-      (a2.children[0].children[0].children[1] as HTMLInputElement).value = table[pos];
+    let validInput = 0;
+    auth.querySelectorAll<HTMLInputElement>('input[type=password]').forEach((el) => {
+      const codeTarget = el.parentElement?.parentElement?.querySelector('th[align=left]')?.textContent;
+      if (!codeTarget)
+        return;
+      reMatrixCodePos.lastIndex = 0;
+      const execRes = reMatrixCodePos.exec(codeTarget);
+      if (!execRes)
+        return;
+      // code position
+      const pos = execRes[1].charCodeAt(0) - A_CHAR_CODE + 
+        (execRes[2].charCodeAt(0) - NUM_1_CHAR_CODE) * 10;
+      el.value = table[pos];
+      ++validInput;
+    });
+    if (validInput != 3) {
+      showAlert(`Matrix authentication info count incorrect. \nExpected 3, got ${validInput}.`);
+    } else {
+      btnForward!.click();
     }
-    btnForward!.click();
   }
 }
 

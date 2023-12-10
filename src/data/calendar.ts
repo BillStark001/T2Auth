@@ -39,6 +39,9 @@ export const generateCourseEvents = (
     if (jump[i]?.length)
       jump[i].map(d => event.addPropertyWithValue('exdate', ICAL.Time.fromJSDate(d.add(hStart * 60 + mStart, 'minutes').toDate())));
 
+    // TODO parse course position
+    // TODO add all links to the description
+
     ans.push(event);
   }
   return ans;
