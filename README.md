@@ -1,5 +1,11 @@
 # T2Auth
 
+## Important Notice
+
+Since Tokyo Institute of Technology is merged and renamed to Institute of Science Tokyo along with the web system renewed, this project is archived since Sept. 23, 2024.
+
+## Introduction
+
 A Chrome extension to ease the use and improve user experience of the IT facilities in Tokyo Institute of Technology.
 
 Currently it supports only auto-login and course calendar generation.
